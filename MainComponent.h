@@ -1,15 +1,15 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "DJAudioPlayer.h"
+#include "DeckGUI.h"
 
 //==============================================================================
 /*
     This component lives inside our window, and this is where you should put all
     your controls and content.
 */
-class MainComponent  : public juce::AudioAppComponent,
-                       public juce::Button::Listener,
-                       public juce::Slider::Listener
+class MainComponent  : public juce::AudioAppComponent
 {
 public:
     //==============================================================================
@@ -23,43 +23,24 @@ public:
     void releaseResources() override;
 
     //==============================================================================
-    // Implement Component ?
+    // Implement Component 
     void paint (juce::Graphics& g) override;
     void resized() override;
 
-    /** Implement Button::Listener */
-    void buttonClicked(juce::Button* button) override;
-
-    /** Implement Slider::Listener */
-    void sliderValueChanged(juce::Slider* slider) override;
-
 private:
     //==============================================================================
-    // Your private member variables go here...
-    juce::TextButton playButton{ "PLAY" };
-    juce::TextButton stopButton{ "STOP" };
-    juce::TextButton loadButton{ "LOAD" };
-    juce::Slider gainSlider;
-    juce::Slider pitchSlider;
-    juce::Slider speedSlider;
-    
-
-    bool playing;
-
     // sound sample modification settings
-    juce::Random rand;
-    double phase;   // sample phase
-    double dphase;  // phase difference
-    float gain;     // sample gain 
+    //juce::Random rand;
+    //double phase;   // sample phase
+    //double dphase;  // phase difference
+    //float gain;     // sample gain 
 
-    // sound file playback objects
-    juce::AudioFormatManager formatManager;
-    // use smart pointer for dynamic instantiation
-    std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
-    juce::AudioTransportSource transportSource;
-    juce::ResamplingAudioSource resampleSource{&transportSource, false, 2};
+    DJAudioPlayer player1;
+    DJAudioPlayer player2;
+    DeckGUI deckGUI1{ &player1 };
+    DeckGUI deckGUI2{ &player2 };
 
-    void loadURL(juce::URL audioURL);
+    juce::MixerAudioSource mixerSource;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
