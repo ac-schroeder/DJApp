@@ -12,26 +12,37 @@
 #include "DeckGUI.h"
 
 //==============================================================================
-DeckGUI::DeckGUI(DJAudioPlayer* _player) : player(_player)
+DeckGUI::DeckGUI(DJAudioPlayer* _player,
+                 juce::AudioFormatManager& formatManagerToUse,
+                 juce::AudioThumbnailCache& cacheToUse) 
+    : player{ _player },
+    waveformDisplay{ formatManagerToUse, cacheToUse }
 {
-    // Make components visible
+    // make button components visible
     addAndMakeVisible(playButton);
     addAndMakeVisible(stopButton);
+    addAndMakeVisible(loadButton);
+
+    // make slider components visible
     addAndMakeVisible(gainSlider);
     addAndMakeVisible(pitchSlider);
     addAndMakeVisible(speedSlider);
     addAndMakeVisible(positionSlider);
-    addAndMakeVisible(loadButton);
 
-    // add button and slider listeners
+    // make waveform display visible
+    addAndMakeVisible(waveformDisplay);
+
+    // add button listeners
     playButton.addListener(this);
     stopButton.addListener(this);
+    loadButton.addListener(this);
+
+    // add slider listeners
     gainSlider.addListener(this);
     pitchSlider.addListener(this);
     speedSlider.addListener(this);
     positionSlider.addListener(this);
-    loadButton.addListener(this);
-
+    
     // restrict slider ranges
     gainSlider.setRange(0.0, 1.0);
     speedSlider.setRange(0.0, 100.0);
@@ -57,7 +68,7 @@ void DeckGUI::paint (juce::Graphics& g)
 
 void DeckGUI::resized()
 {
-    double rowHeight = getHeight() / 7;
+    double rowHeight = getHeight() / 9;
 
     // set resizing bounds on components
     playButton.setBounds(0, 0, getWidth(), rowHeight);
@@ -66,7 +77,8 @@ void DeckGUI::resized()
     pitchSlider.setBounds(0, rowHeight * 3, getWidth(), rowHeight);
     speedSlider.setBounds(0, rowHeight * 4, getWidth(), rowHeight);
     positionSlider.setBounds(0, rowHeight * 5, getWidth(), rowHeight);
-    loadButton.setBounds(0, rowHeight * 6, getWidth(), rowHeight);
+    waveformDisplay.setBounds(0, rowHeight * 6, getWidth(), rowHeight * 2);
+    loadButton.setBounds(0, rowHeight * 8, getWidth(), rowHeight);
 }
 
 /** Implement Button::Listener */
@@ -98,8 +110,9 @@ void DeckGUI::buttonClicked(juce::Button* button)
         if (chooser.browseForFileToOpen())
         {
             // convert the chosen file to a URL and load it
-            auto file = chooser.getResult();
-            player->loadURL(juce::URL{ file });
+            auto fileURL = juce::URL{ chooser.getResult() };
+            player->loadURL(fileURL);
+            waveformDisplay.loadURL(fileURL);
         }
     }
 }
@@ -140,12 +153,12 @@ void DeckGUI::sliderValueChanged(juce::Slider* slider)
     }
 }
 
+/** Implement FileDragAndDrop */
 bool DeckGUI::isInterestedInFileDrag(const juce::StringArray& files)
 {
     DBG("DeckGUI::isInterestedInFileDrag");
     return true;
 }
-
 void DeckGUI::filesDropped(const juce::StringArray& files, int x, int y)
 {
     DBG("DeckGUI::filesDropped");

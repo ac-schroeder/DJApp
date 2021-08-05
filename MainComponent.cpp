@@ -24,6 +24,9 @@ MainComponent::MainComponent()
     // draw the deck GUI components
     addAndMakeVisible(deckGUI1);
     addAndMakeVisible(deckGUI2);
+
+    // register basic formats for the formatManager used by the waveform display
+    formatManager.registerBasicFormats();
 }
 
 MainComponent::~MainComponent()
@@ -93,7 +96,7 @@ void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& buffer
 
 void MainComponent::releaseResources()
 {
-    mixerSource.removeAllInputs();
+    mixerSource.removeAllInputs(); // TODO: what does this do, and do I need it?
     mixerSource.releaseResources();
     player1.releaseResources();
     player2.releaseResources();
