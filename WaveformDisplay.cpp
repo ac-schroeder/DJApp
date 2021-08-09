@@ -18,7 +18,8 @@ WaveformDisplay::WaveformDisplay(juce::AudioFormatManager& formatManagerToUse,
         1000,                       // sourceSamplesPerThumbnailSample: image resolution
         formatManagerToUse,         // AudioFormatManager object: to read file to the audioThumbnail
         cacheToUse},                // AudioThumbnailCache object: to store/share data for all thumbs
-      fileLoaded{ false }
+      fileLoaded{ false },      // file is not loaded yet
+      position{0}               // initial playhead position is 0
 {
     // register change listener
     audioThumb.addChangeListener(this);
@@ -39,9 +40,13 @@ void WaveformDisplay::paint (juce::Graphics& g)
 
     if (fileLoaded)
     {
+        // draw waveform
         audioThumb.drawChannel(g, getLocalBounds(), 
                                0, audioThumb.getTotalLength(),
                                0, 1.0f);
+        // draw playhead indicator
+        g.setColour(juce::Colours::lightgreen);
+        g.drawRect(position * getWidth(), 0, 6, getHeight());
     }
     else
     {
@@ -80,4 +85,15 @@ void WaveformDisplay::loadURL(juce::URL audioURL)
     {
         DBG("WaveformDisplay::loadURL: File was not loaded.");
     }
+}
+
+void WaveformDisplay::setPositionRelative(double _position)
+{
+    // only change position if it's changed
+    if (_position != position)
+    {
+        position = _position;
+        repaint();
+    }
+    
 }

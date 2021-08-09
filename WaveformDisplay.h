@@ -33,12 +33,17 @@ public:
     /** Load the audio file by setting as source for the AudioThumbnail */
     void loadURL(juce::URL audioURL);
 
+    /** Set the relative position of the playhead */
+    void setPositionRelative(double _position);
+
 private:
     // audio thumbnail for displaying waveform; initialised in WaveformDisplay initialiser list
     // note to me: AudioThumbnail's constructor requires parameters. the only reason we can declare this here without instantiating it is because in the constructor initialiser list for WaveformDisplay, we initialize this object with its parameters!
     juce::AudioThumbnail audioThumb;
     // flag to decide whether to paint the waveform to the component
     bool fileLoaded;
+    // playhead position
+    double position;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveformDisplay)
 };

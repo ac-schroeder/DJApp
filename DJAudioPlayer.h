@@ -15,7 +15,7 @@
 class DJAudioPlayer : public juce::AudioSource 
 {
 public:
-    DJAudioPlayer(juce::AudioFormatManager& formatManager);
+    DJAudioPlayer(juce::AudioFormatManager& _formatManager);
     ~DJAudioPlayer();
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
@@ -30,6 +30,9 @@ public:
 
     void start();
     void stop();
+
+    /** get the relative position of the playhead */
+    double getPositionRelative();
 
 private:
     // reference to the app's audio format manager object, to process different sound file formats
