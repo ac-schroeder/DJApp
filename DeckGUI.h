@@ -56,7 +56,7 @@ private:
     // pointer to audio player
     DJAudioPlayer* player;
 
-    // waveform display component
+    // waveform display component; initialised in DeckGUI initialiser list
     WaveformDisplay waveformDisplay;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DeckGUI)

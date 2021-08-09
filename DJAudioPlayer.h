@@ -15,7 +15,7 @@
 class DJAudioPlayer : public juce::AudioSource 
 {
 public:
-    DJAudioPlayer();
+    DJAudioPlayer(juce::AudioFormatManager& formatManager);
     ~DJAudioPlayer();
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
@@ -32,8 +32,8 @@ public:
     void stop();
 
 private:
-    // audio format manager object to process different sound file formats
-    juce::AudioFormatManager formatManager;
+    // reference to the app's audio format manager object, to process different sound file formats
+    juce::AudioFormatManager& formatManager;
     // audio source object; use smart pointer for dynamic instantiation
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
     // wrapper object for readerSource, to control playback

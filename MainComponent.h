@@ -35,19 +35,18 @@ private:
     //double dphase;  // phase difference
     //float gain;     // sample gain 
 
-    // shared AudioFormatManager for all deck players
-    // actually, this is only used by the waveform thumbnails!!! seems wrong.
+    // shared AudioFormatManager for all audio players and thumbnails
     juce::AudioFormatManager formatManager;
-    // shared AudioThumbnailCache for all deck waveform thumbnails
+    // shared AudioThumbnailCache for all deck waveform AudioThumbnail objects
     juce::AudioThumbnailCache thumbCache{ 100 };
 
     // audio source players
-    DJAudioPlayer player1;
-    DJAudioPlayer player2;
+    DJAudioPlayer player1{ formatManager };
+    DJAudioPlayer player2{ formatManager };
 
     // deck GUI components
-    // get the address of the players to assign to pointers in the objects
-    // pass them the shared format manager and waveform thumbnail cache
+    // get the address of the players to assign to pointers in the objects.
+    // pass them the shared format manager and waveform thumbnail cache.
     DeckGUI deckGUI1{ &player1, formatManager, thumbCache };
     DeckGUI deckGUI2{ &player2, formatManager, thumbCache };
 

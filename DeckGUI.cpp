@@ -16,7 +16,9 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
                  juce::AudioFormatManager& formatManagerToUse,
                  juce::AudioThumbnailCache& cacheToUse) 
     : player{ _player },
-    waveformDisplay{ formatManagerToUse, cacheToUse }
+      waveformDisplay{          // WaveformDisplay component
+        formatManagerToUse,       // AudioFormatManager: to send to AudioThumbnail
+        cacheToUse}               // AudioThumbnailCache: to send to AudioThumbnail
 {
     // make button components visible
     addAndMakeVisible(playButton);

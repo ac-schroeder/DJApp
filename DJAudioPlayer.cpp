@@ -10,19 +10,16 @@
 
 #include "DJAudioPlayer.h"
 
-DJAudioPlayer::DJAudioPlayer()
+DJAudioPlayer::DJAudioPlayer(juce::AudioFormatManager& _formatManager)
+    : formatManager(_formatManager)
 {
-
 }
 DJAudioPlayer::~DJAudioPlayer()
 {
-
 }
 
 void DJAudioPlayer::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
 {
-    // register audio formats
-    formatManager.registerBasicFormats();
     // prepare the transport source
     transportSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
     // prepare the resample source, for playback speed control

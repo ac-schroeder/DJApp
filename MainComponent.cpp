@@ -25,7 +25,7 @@ MainComponent::MainComponent()
     addAndMakeVisible(deckGUI1);
     addAndMakeVisible(deckGUI2);
 
-    // register basic formats for the formatManager used by the waveform display
+    // register basic formats for the app's formatManager
     formatManager.registerBasicFormats();
 }
 
