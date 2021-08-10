@@ -46,7 +46,9 @@ void WaveformDisplay::paint (juce::Graphics& g)
                                0, 1.0f);
         // draw playhead indicator
         g.setColour(juce::Colours::lightgreen);
-        g.drawRect(position * getWidth(), 0, 6, getHeight());
+        juce::Rectangle<int> playheadBar (position * getWidth(), 0, 4, getHeight());
+        g.fillRect(playheadBar);
+        //g.drawRect(position * getWidth(), 0, 6, getHeight());
     }
     else
     {
@@ -95,5 +97,4 @@ void WaveformDisplay::setPositionRelative(double _position)
         position = _position;
         repaint();
     }
-    
 }

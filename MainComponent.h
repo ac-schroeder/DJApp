@@ -3,6 +3,7 @@
 #include <JuceHeader.h>
 #include "DJAudioPlayer.h"
 #include "DeckGUI.h"
+#include "PlaylistComponent.h"
 
 //==============================================================================
 /*
@@ -44,13 +45,17 @@ private:
     DJAudioPlayer player1{ formatManager };
     DJAudioPlayer player2{ formatManager };
 
+    // mixer audio source to handle combination of players
+    juce::MixerAudioSource mixerSource;
+
     // deck GUI components
     // get the address of the players to assign to pointers in the objects.
     // pass them the shared format manager and waveform thumbnail cache.
     DeckGUI deckGUI1{ &player1, formatManager, thumbCache };
     DeckGUI deckGUI2{ &player2, formatManager, thumbCache };
 
-    juce::MixerAudioSource mixerSource;
+    // playlist component
+    PlaylistComponent playlistComponent;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

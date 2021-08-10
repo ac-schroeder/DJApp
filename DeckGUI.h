@@ -20,7 +20,8 @@
 class DeckGUI  : public juce::Component,
                  public juce::Button::Listener,
                  public juce::Slider::Listener,
-                 public juce::FileDragAndDropTarget
+                 public juce::FileDragAndDropTarget,
+                 public juce::Timer
 {
 public:
     DeckGUI(DJAudioPlayer* player,
@@ -41,6 +42,9 @@ public:
     bool isInterestedInFileDrag(const juce::StringArray& files) override;
     void filesDropped(const juce::StringArray& files, int x, int y) override;
 
+    /** Implement Timer */
+    void timerCallback() override;
+
 private:
     // button components
     juce::TextButton playButton{ "PLAY" };
@@ -49,7 +53,7 @@ private:
 
     // slider components
     juce::Slider gainSlider;
-    juce::Slider pitchSlider;
+    //juce::Slider pitchSlider;
     juce::Slider speedSlider;
     juce::Slider positionSlider;
 

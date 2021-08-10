@@ -25,6 +25,9 @@ MainComponent::MainComponent()
     addAndMakeVisible(deckGUI1);
     addAndMakeVisible(deckGUI2);
 
+    // draw the playlist component
+    addAndMakeVisible(playlistComponent);
+
     // register basic formats for the app's formatManager
     formatManager.registerBasicFormats();
 }
@@ -43,13 +46,16 @@ void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRat
     //dphase = 0;
     //gain = 0.5;
 
-    // add both players to the mixer audio source
-    mixerSource.addInputSource(&player1, false);
-    mixerSource.addInputSource(&player2, false);
-
     // set up player audio sources
     player1.prepareToPlay(samplesPerBlockExpected, sampleRate);
     player2.prepareToPlay(samplesPerBlockExpected, sampleRate);
+
+    // set up mixer audio source
+    mixerSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
+
+    // add both players to the mixer audio source
+    mixerSource.addInputSource(&player1, false);
+    mixerSource.addInputSource(&player2, false);
 }
 
 void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
@@ -112,8 +118,11 @@ void MainComponent::paint (juce::Graphics& g)
 void MainComponent::resized()
 {
     // set bounds on deck GUI components
-    deckGUI1.setBounds(0, 0, getWidth()/2, getHeight());
-    deckGUI2.setBounds(getWidth() / 2, 0, getWidth() / 2, getHeight());
+    deckGUI1.setBounds(0, 0, getWidth()/2, getHeight() / 2);
+    deckGUI2.setBounds(getWidth() / 2, 0, getWidth() / 2, getHeight() / 2);
+
+    // set bounds on playlist component
+    playlistComponent.setBounds(0, getHeight() / 2, getWidth(), getHeight() / 2);
 }
 
 
