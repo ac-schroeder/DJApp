@@ -54,7 +54,7 @@ private:
     DeckGUI deckGUI1{ &player1, formatManager, thumbCache };
     DeckGUI deckGUI2{ &player2, formatManager, thumbCache };
 
-    // playlist component
+    // track playlist component to display under the deck GUIs
     PlaylistComponent playlistComponent;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
