@@ -12,11 +12,9 @@
 #include "PlaylistComponent.h"
 
 //==============================================================================
-PlaylistComponent::PlaylistComponent()
+PlaylistComponent::PlaylistComponent(juce::AudioFormatManager& _formatManager)
+    : musicLibrary { _formatManager }
 {
-    // In your constructor, you should add any child components, and
-    // initialise any special settings that your component needs.
-
     // set the table component's data model
     // this tells the component to call the TableListBoxModel functions
     tableComponent.setModel(this);
@@ -29,8 +27,13 @@ PlaylistComponent::PlaylistComponent()
     tableComponent.getHeader().addColumn("Track Title", 1, 400);
     tableComponent.getHeader().addColumn("", 2, 200);
 
+    // make the Add Track button visible
+    addAndMakeVisible(addTrackButton);
     // make the table component visible
     addAndMakeVisible(tableComponent);
+
+    // add main controls button listeners
+    addTrackButton.addListener(this);
 }
 
 PlaylistComponent::~PlaylistComponent()
@@ -39,13 +42,6 @@ PlaylistComponent::~PlaylistComponent()
 
 void PlaylistComponent::paint (juce::Graphics& g)
 {
-    /* This demo code just fills the component's background and
-       draws some placeholder text to get you started.
-
-       You should replace everything in this method with your own
-       drawing code..
-    */
-
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
 
     g.setColour (juce::Colours::grey);
@@ -59,11 +55,10 @@ void PlaylistComponent::paint (juce::Graphics& g)
 
 void PlaylistComponent::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
-
-    tableComponent.setBounds(0, 0, getWidth(), getHeight());
-
+    double controlsHeight = getHeight() / 10;
+    double controlButtonWidth = getWidth() / 4;
+    addTrackButton.setBounds(controlButtonWidth * 3, 0, controlButtonWidth, controlsHeight);
+    tableComponent.setBounds(0, controlsHeight, getWidth(), getHeight() - controlsHeight);
 }
 
 int PlaylistComponent::getNumRows()
@@ -99,6 +94,7 @@ void PlaylistComponent::paintCell(juce::Graphics& g,
     // draw the track titles down the first column
     if(columnId == 1)
     {
+        // draw the track title in the row that matches the index of the track in the shownTracks vector
         g.drawText(trackTitles[rowNumber],
             2, 0,
             width - 4, height,
@@ -128,6 +124,13 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
 
             // save it as the existing component to update, to return below
             existingComponentToUpdate = button;
+
+            /*
+                Instead of the above, create two buttons, one with a name for the left deckGUI, one with a name for the right deckGUI. 
+
+                Then give each button the track title as its ID. 
+                    This does mean same ID on two buttons, but I don't care as long as it works.
+            */
         }
     }
     // return the custom component, or nullptr if the second column
@@ -136,11 +139,36 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
 
 void PlaylistComponent::buttonClicked(juce::Button* button)
 {
-    // get the track number from the component id on the button
-    // convert the juce string to a standard string, then to an integer
-    int trackID = std::stoi(button->getComponentID().toStdString());
+    if (button == &addTrackButton)
+    {
+        DBG("add track button was clicked");
 
-    DBG("Button clicked! Button Component ID: " + button->getComponentID());
-    DBG("Button clicked! Track ID: " + std::to_string(trackID));
-    DBG("Button clicked! Track Title: " + trackTitles[trackID]);
+        // create a file chooser GUI for the user to select a file
+        juce::FileChooser chooser{ "Select a track to load..." };
+        // if the user selects a file to open, load the file
+        if (chooser.browseForFileToOpen())
+        {
+            // convert the chosen file to a URL and load it
+            auto audioURL = juce::URL{ chooser.getResult() };
+            musicLibrary.addTrack(audioURL);
+        }
+    }
+    else
+    {
+        // get the track number from the component id on the button
+        // convert the juce string to a standard string, then to an integer
+        int trackID = std::stoi(button->getComponentID().toStdString());
+
+        DBG("Button clicked! Button Component ID: " + button->getComponentID());
+        DBG("Button clicked! Track ID: " + std::to_string(trackID));
+        DBG("Button clicked! Track Title: " + trackTitles[trackID]);
+
+        // get the button component name: that is the deck GUI to call
+            // call that deckGUI pointer's loadURL function
+
+        // get the button component ID: that is the track title
+            // use it to look up the audioURL of that track 
+                // use getTrack(keyword) and then you have the track object
+            // pass it to the deckGUI pointer's loadURL function
+    }
 }

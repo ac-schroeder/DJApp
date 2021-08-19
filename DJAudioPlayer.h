@@ -34,6 +34,9 @@ public:
     /** get the relative position of the playhead */
     double getPositionRelative();
 
+    /** get the track length */
+    double getTrackLength();
+
 private:
     // reference to the app's audio format manager object, to process different sound file formats
     juce::AudioFormatManager& formatManager;

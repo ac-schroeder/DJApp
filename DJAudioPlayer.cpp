@@ -11,7 +11,7 @@
 #include "DJAudioPlayer.h"
 
 DJAudioPlayer::DJAudioPlayer(juce::AudioFormatManager& _formatManager)
-    : formatManager(_formatManager)
+    : formatManager{ _formatManager }
 {
 }
 DJAudioPlayer::~DJAudioPlayer()
@@ -53,7 +53,7 @@ void DJAudioPlayer::loadURL(juce::URL audioURL)
         // set to true to delete the AudioFormatReader object when... 
         // ...the AudioFormatReaderSource object is deleted
         std::unique_ptr<juce::AudioFormatReaderSource> newSource
-        (new juce::AudioFormatReaderSource(reader, true));
+        { new juce::AudioFormatReaderSource(reader, true) };
 
         // create the TransportSource object based on this AudioFormatReaderSource object
         transportSource.setSource(newSource.get(), 0, nullptr,
@@ -122,4 +122,10 @@ void DJAudioPlayer::stop()
 double DJAudioPlayer::getPositionRelative()
 {
     return transportSource.getCurrentPosition() / transportSource.getLengthInSeconds();
+}
+
+/** get the track length */
+double DJAudioPlayer::getTrackLength()
+{
+    return transportSource.getLengthInSeconds();
 }

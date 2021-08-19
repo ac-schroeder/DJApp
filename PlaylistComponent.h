@@ -10,9 +10,11 @@
 
 #pragma once
 
-#include <JuceHeader.h>
 #include <vector>
 #include <string>
+#include <JuceHeader.h>
+#include "MusicLibrary.h"
+
 
 //==============================================================================
 /*
@@ -22,7 +24,7 @@ class PlaylistComponent  : public juce::Component,
                            public juce::Button::Listener
 {
 public:
-    PlaylistComponent();
+    PlaylistComponent(juce::AudioFormatManager& _formatManager);
     ~PlaylistComponent() override;
 
     void paint (juce::Graphics&) override;
@@ -55,9 +57,14 @@ public:
 private:
     // the table component for the playlist track info and play buttons
     juce::TableListBox tableComponent;
+    // the Add Track button to add files to the playlist
+    juce::TextButton addTrackButton{ "Add Track" };
 
     // a vector of track title strings
     std::vector<std::string> trackTitles;
+
+    // the music library; initialized in PlaylistComponent initializer list
+    MusicLibrary musicLibrary;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlaylistComponent)
 };
