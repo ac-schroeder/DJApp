@@ -20,12 +20,16 @@ PlaylistComponent::PlaylistComponent(juce::AudioFormatManager& _formatManager)
     tableComponent.setModel(this);
 
     // add some example track titles to make up a playlist
-    trackTitles.push_back("Track 1");
-    trackTitles.push_back("Track 2");
+    //trackTitles.push_back("Track 1");
+    //trackTitles.push_back("Track 2");
+
+    // populate the shownTracks with the Music Library tracks
+    shownTracks = musicLibrary.getTracks();
 
     // create headers for the table
-    tableComponent.getHeader().addColumn("Track Title", 1, 400);
-    tableComponent.getHeader().addColumn("", 2, 200);
+    tableComponent.getHeader().addColumn("File Name", 1, 400);
+    tableComponent.getHeader().addColumn("Track Length", 2, 200);
+    tableComponent.getHeader().addColumn("Deck Select", 3, 200);
 
     // make the Add Track button visible
     addAndMakeVisible(addTrackButton);
@@ -64,7 +68,7 @@ void PlaylistComponent::resized()
 int PlaylistComponent::getNumRows()
 {
     // use the size of the trackTitles vector to determine number of rows
-    return trackTitles.size();
+    return shownTracks.size();
 }
 
 void PlaylistComponent::paintRowBackground(juce::Graphics& g,
@@ -95,7 +99,16 @@ void PlaylistComponent::paintCell(juce::Graphics& g,
     if(columnId == 1)
     {
         // draw the track title in the row that matches the index of the track in the shownTracks vector
-        g.drawText(trackTitles[rowNumber],
+        g.drawText(shownTracks[rowNumber].fileName,
+            2, 0,
+            width - 4, height,
+            juce::Justification::centredLeft,
+            true);
+    }
+    if (columnId == 2)
+    {
+        // draw the track length
+        g.drawText(shownTracks[rowNumber].length,
             2, 0,
             width - 4, height,
             juce::Justification::centredLeft,
@@ -109,7 +122,7 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
     juce::Component* existingComponentToUpdate)
 {
     // create custom component play buttons in the second column
-    if (columnId == 2)
+    if (columnId == 3)
     {
         // check that a custom component does not already exist
         if (existingComponentToUpdate == nullptr)
@@ -152,6 +165,10 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
             auto audioURL = juce::URL{ chooser.getResult() };
             musicLibrary.addTrack(audioURL);
         }
+
+        // update table
+        shownTracks = musicLibrary.getTracks();
+        tableComponent.updateContent();
     }
     else
     {
@@ -161,7 +178,6 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
 
         DBG("Button clicked! Button Component ID: " + button->getComponentID());
         DBG("Button clicked! Track ID: " + std::to_string(trackID));
-        DBG("Button clicked! Track Title: " + trackTitles[trackID]);
 
         // get the button component name: that is the deck GUI to call
             // call that deckGUI pointer's loadURL function

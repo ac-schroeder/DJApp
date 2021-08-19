@@ -14,6 +14,7 @@
 #include <string>
 #include <JuceHeader.h>
 #include "MusicLibrary.h"
+// #include "MusicTrack.h"
 
 
 //==============================================================================
@@ -60,8 +61,8 @@ private:
     // the Add Track button to add files to the playlist
     juce::TextButton addTrackButton{ "Add Track" };
 
-    // a vector of track title strings
-    std::vector<std::string> trackTitles;
+    // a vector of MusicTrack objects
+    std::vector<MusicTrack> shownTracks;
 
     // the music library; initialized in PlaylistComponent initializer list
     MusicLibrary musicLibrary;

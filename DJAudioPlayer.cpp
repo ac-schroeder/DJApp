@@ -125,7 +125,14 @@ double DJAudioPlayer::getPositionRelative()
 }
 
 /** get the track length */
-double DJAudioPlayer::getTrackLength()
+std::string DJAudioPlayer::getTrackLength()
 {
-    return transportSource.getLengthInSeconds();
+    DBG(std::to_string(transportSource.getLengthInSeconds()));
+    int lengthInSeconds = round(transportSource.getLengthInSeconds());
+    DBG(std::to_string(lengthInSeconds));
+
+    int secondsLong = lengthInSeconds % 60;
+    int minutesLong = (int)(lengthInSeconds / 60);
+    DBG(std::to_string(minutesLong) + "m " + std::to_string(secondsLong) + "s");
+    return std::to_string(minutesLong) + "m " + std::to_string(secondsLong) + "s";
 }

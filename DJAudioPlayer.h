@@ -35,7 +35,7 @@ public:
     double getPositionRelative();
 
     /** get the track length */
-    double getTrackLength();
+    std::string getTrackLength();
 
 private:
     // reference to the app's audio format manager object, to process different sound file formats
