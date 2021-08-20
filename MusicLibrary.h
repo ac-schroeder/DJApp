@@ -10,20 +10,9 @@
 
 #pragma once
 
-#include <vector>
-#include <string>
 #include <JuceHeader.h>
+#include "MusicTrack.h"
 #include "DJAudioPlayer.h"
-
-class MusicTrack
-{
-public:
-    MusicTrack(juce::String _fileName, juce::URL _audioURL, std::string _length);
-
-    juce::String fileName;      // the track title
-    juce::URL audioURL;         // the track file URL
-    std::string length;         // the track length
-};
 
 class MusicLibrary 
 {
@@ -34,7 +23,8 @@ public:
     // can this be a vector of pointers to the MusicTrack objects?
     std::vector<MusicTrack> getTracks();
     // can this be a pointer to a MusicTrack?
-    MusicTrack* getTrack(std::string keyword);
+    MusicTrack* getTrack(juce::String keyword);
+    //std::unique_ptr<MusicTrack> getTrack(juce::String keyword);
 
     void addTrack(juce::URL audioURL);
     void saveLibrary();
@@ -45,7 +35,7 @@ private:
     std::vector<MusicTrack> libraryTracks;
 
     // an audio player to read meta info about tracks
-    DJAudioPlayer trackPlayer;
+    DJAudioPlayer sourceReader;
 };
 
 

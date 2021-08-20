@@ -29,7 +29,8 @@ PlaylistComponent::PlaylistComponent(juce::AudioFormatManager& _formatManager)
     // create headers for the table
     tableComponent.getHeader().addColumn("File Name", 1, 400);
     tableComponent.getHeader().addColumn("Track Length", 2, 200);
-    tableComponent.getHeader().addColumn("Deck Select", 3, 200);
+    tableComponent.getHeader().addColumn("", 3, 100);
+    tableComponent.getHeader().addColumn("", 4, 100);
 
     // make the Add Track button visible
     addAndMakeVisible(addTrackButton);
@@ -121,29 +122,42 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
     bool isRowSelected,
     juce::Component* existingComponentToUpdate)
 {
-    // create custom component play buttons in the second column
+    // create custom component play buttons in the 3rd and 4th columns
     if (columnId == 3)
     {
         // check that a custom component does not already exist
         if (existingComponentToUpdate == nullptr)
         {
             // create a text button component with the row number as its ID
-            juce::TextButton* button = new juce::TextButton{ "play" };
-            juce::String id{ std::to_string(rowNumber) };
-            button->setComponentID(id);
+            juce::TextButton* leftDeckButton = new juce::TextButton{ "Left Deck" };
+            juce::String id { shownTracks[rowNumber].fileName };
+            leftDeckButton->setComponentID(id);
 
             // assign it the button listener
-            button->addListener(this);
+            leftDeckButton->addListener(this);
 
             // save it as the existing component to update, to return below
-            existingComponentToUpdate = button;
+            existingComponentToUpdate = leftDeckButton;
+        }
+        //else
+        //{
+        //    // slack comment that this helps with scrolling the table?? he said "i update its properties such as lambda callback so it is redrawn for hte rows"
+        //    tableComponent.updateContent();
+        //}
+    }
+    if (columnId == 4)
+    {
+        // check that a custom component does not already exist
+        if (existingComponentToUpdate == nullptr)
+        {
+            juce::TextButton* rightDeckButton = new juce::TextButton{ "Right Deck" };
+            juce::String id{ shownTracks[rowNumber].fileName };
+            rightDeckButton->setComponentID(id);
 
-            /*
-                Instead of the above, create two buttons, one with a name for the left deckGUI, one with a name for the right deckGUI. 
+            // assign it the button listener
+            rightDeckButton->addListener(this);
 
-                Then give each button the track title as its ID. 
-                    This does mean same ID on two buttons, but I don't care as long as it works.
-            */
+            existingComponentToUpdate = rightDeckButton;
         }
     }
     // return the custom component, or nullptr if the second column
@@ -173,18 +187,39 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
     else
     {
         // get the track number from the component id on the button
-        // convert the juce string to a standard string, then to an integer
-        int trackID = std::stoi(button->getComponentID().toStdString());
+        juce::String fileName = button->getComponentID();
 
-        DBG("Button clicked! Button Component ID: " + button->getComponentID());
-        DBG("Button clicked! Track ID: " + std::to_string(trackID));
+        DBG("Button clicked! Button Component ID: " + fileName);
+        DBG("Button clicked! Track File Name: " + fileName);
 
         // get the button component name: that is the deck GUI to call
             // call that deckGUI pointer's loadURL function
+
 
         // get the button component ID: that is the track title
             // use it to look up the audioURL of that track 
                 // use getTrack(keyword) and then you have the track object
             // pass it to the deckGUI pointer's loadURL function
+
+        // QUESTION: Shouldn't this work? it's a pointer to the real track, but the pointer is in scope of this function, so the pointer should be deleted, but the track would persist, to be found again next time the button is clicked. No???
+        
+        MusicTrack* track { musicLibrary.getTrack(fileName) };
+        if (track != nullptr)
+        {
+            DBG("Pointer points to track with name " + track->fileName);
+        }
+        else
+        {
+            DBG("I'm a null pointer");
+        }
+       
+
+        // QUESTION TO GOOGLE: do smart pointers delete the referenced object when the POINTER goes out of scope?
+        // this makes a smart pointer pointing to the actual track. it should destroy the track after this scope ends?
+        /*std::unique_ptr<MusicTrack> track{ musicLibrary.getTrack(fileName) };
+        if (track != nullptr)
+        {
+            DBG("Pointer points to track with name " + track->fileName);
+        }*/
     }
 }
