@@ -23,7 +23,8 @@
 */
 class PlaylistComponent  : public juce::Component,
                            public juce::TableListBoxModel,
-                           public juce::Button::Listener
+                           public juce::Button::Listener,
+                           public juce::TextEditor::Listener
 {
 public:
     PlaylistComponent(juce::AudioFormatManager& _formatManager, 
@@ -49,7 +50,7 @@ public:
                     int width, 
                     int height, 
                     bool rowIsSelected) override;
-    /**  */
+    /** Draw custom components in cells */
     juce::Component* refreshComponentForCell(int rowNumber, 
                     int columnId, 
                     bool isRowSelected, 
@@ -58,13 +59,18 @@ public:
     /** Implement Button Listener */
     void buttonClicked(juce::Button* button) override;
 
+    /** Implement TextEditor Listener */
+    void textEditorReturnKeyPressed(juce::TextEditor& textEditor) override;
+
 private:
     // the table component for the playlist track info and play buttons
     juce::TableListBox tableComponent;
     // the Add Track button to add files to the playlist
-    juce::TextButton addTrackButton{ "Add Track" };
+    juce::TextButton addTrackButton{ "ADD TRACK" };
     // the Search  button to search for tracks in the playlist
-    // juce::TextButton searchButton{ "Search" };
+    juce::TextEditor searchBox;
+    // a message box to inform user of search results
+    juce::Label searchResultsMessageBox;
 
     // the user's music library 
     MusicLibrary musicLibrary;

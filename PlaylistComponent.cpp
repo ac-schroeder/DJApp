@@ -16,16 +16,11 @@ PlaylistComponent::PlaylistComponent(juce::AudioFormatManager& _formatManager,
                                      DeckGUI* _leftDeck,
                                      DeckGUI* _rightDeck)
     : musicLibrary { _formatManager },
-    leftDeck { _leftDeck },
-    rightDeck { _rightDeck }
+      leftDeck { _leftDeck },
+      rightDeck { _rightDeck }
 {
     // set the table component's data model
-    // this tells the component to call the TableListBoxModel functions
     tableComponent.setModel(this);
-
-    // add some example track titles to make up a playlist
-    //trackTitles.push_back("Track 1");
-    //trackTitles.push_back("Track 2");
 
     // populate the shownTracks with the Music Library tracks
     shownTracks = musicLibrary.getTracks();
@@ -36,13 +31,28 @@ PlaylistComponent::PlaylistComponent(juce::AudioFormatManager& _formatManager,
     tableComponent.getHeader().addColumn("", 3, 100);
     tableComponent.getHeader().addColumn("", 4, 100);
 
-    // make the Add Track button visible
+    // make components visible
     addAndMakeVisible(addTrackButton);
-    // make the table component visible
+    addAndMakeVisible(searchBox);
+    addAndMakeVisible(searchResultsMessageBox);
     addAndMakeVisible(tableComponent);
 
-    // add main controls button listeners
+    // set search box properties
+    searchBox.setJustification(juce::Justification::centred);
+    searchBox.setTextToShowWhenEmpty("SEARCH TRACKS...", juce::Colours::white);
+
+    // set search results message box properties
+    searchResultsMessageBox.setText("Displaying all tracks.",      
+                                    juce::NotificationType::dontSendNotification);
+    // TODO: get this stuff into LookandFeel?
+    // TODO: how do you make a border?!?!?
+    //juce::BorderSize<int> border{ 12 };
+    //searchResultsMessageBox.setBorderSize(border);
+
+    // add listeners
     addTrackButton.addListener(this);
+    searchBox.addListener(this);
+
 }
 
 PlaylistComponent::~PlaylistComponent()
@@ -58,16 +68,18 @@ void PlaylistComponent::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (14.0f);
-    g.drawText ("PlaylistComponent", getLocalBounds(),
-                juce::Justification::centred, true);   // draw some placeholder text
+    //g.drawText ("PlaylistComponent", getLocalBounds(),
+    //            juce::Justification::centred, true);   // draw some placeholder text
 }
 
 void PlaylistComponent::resized()
 {
-    double controlsHeight = getHeight() / 10;
-    double controlButtonWidth = getWidth() / 4;
-    addTrackButton.setBounds(controlButtonWidth * 3, 0, controlButtonWidth, controlsHeight);
-    tableComponent.setBounds(0, controlsHeight, getWidth(), getHeight() - controlsHeight);
+    double topBarHeight = getHeight() / 10;
+    double topBarComponentWidth = getWidth() / 3;
+    addTrackButton.setBounds(0, 0, topBarComponentWidth, topBarHeight);
+    searchBox.setBounds(topBarComponentWidth * 2, 0, topBarComponentWidth, topBarHeight);
+    searchResultsMessageBox.setBounds(0, topBarHeight, getWidth(), topBarHeight);
+    tableComponent.setBounds(0, topBarHeight * 2, getWidth(), getHeight() - (topBarHeight*2));
 }
 
 int PlaylistComponent::getNumRows()
@@ -225,8 +237,55 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
             DBG("Track could not be found");
             // TODO: throw exception
         }
+    }
+}
 
-        
-    
+/** Implement TextEditor Listener */
+void PlaylistComponent::textEditorReturnKeyPressed(juce::TextEditor& textEditor)
+{
+    juce::String searchText = textEditor.getText();
+
+    // if search box is cleared, display default message and all library tracks
+    if (searchText.isEmpty())
+    {
+        // display search results message
+        searchResultsMessageBox.setText("Displaying all tracks.", 
+                                        juce::NotificationType::dontSendNotification);
+
+        // update the playlist to show all tracks
+        shownTracks.clear();
+        shownTracks = musicLibrary.getTracks();
+        tableComponent.updateContent();
+    }
+    else
+    {
+        // Search for a track matching the search input
+        MusicTrack* track = musicLibrary.getTrack(searchText);
+        if (track != nullptr)
+        {
+            DBG("A track was found! " + track->fileName);
+
+            // display search results 
+            searchResultsMessageBox.setText("Displaying search results...",
+                juce::NotificationType::dontSendNotification);
+            shownTracks.clear();
+            shownTracks.push_back(*track);
+            tableComponent.updateContent();
+
+            // TODO: display clear results button
+
+        }
+        else
+        {
+            DBG("There was no match for your search: " + searchText);
+
+            // display search failure message
+            searchResultsMessageBox.setText("No results for your search were found. Displaying all tracks.", juce::NotificationType::dontSendNotification);
+
+            // show all tracks in the playlist
+            shownTracks.clear();
+            shownTracks = musicLibrary.getTracks();
+            tableComponent.updateContent();
+        }
     }
 }

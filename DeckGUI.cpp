@@ -23,7 +23,7 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     // make button components visible
     addAndMakeVisible(playButton);
     addAndMakeVisible(stopButton);
-    addAndMakeVisible(loadButton);
+    //addAndMakeVisible(loadButton);
 
     // make slider components visible
     addAndMakeVisible(gainSlider);
@@ -37,7 +37,7 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     // add button listeners
     playButton.addListener(this);
     stopButton.addListener(this);
-    loadButton.addListener(this);
+    //loadButton.addListener(this);
 
     // add slider listeners
     gainSlider.addListener(this);
@@ -75,7 +75,7 @@ void DeckGUI::paint (juce::Graphics& g)
 void DeckGUI::resized()
 {
     //double rowHeight = getHeight() / 9;
-    double rowHeight = getHeight() / 8;
+    double rowHeight = getHeight() / 7;
 
     // set resizing bounds on components
     playButton.setBounds(0, 0, getWidth(), rowHeight);
@@ -85,7 +85,7 @@ void DeckGUI::resized()
     speedSlider.setBounds(0, rowHeight * 3, getWidth(), rowHeight);
     positionSlider.setBounds(0, rowHeight * 4, getWidth(), rowHeight);
     waveformDisplay.setBounds(0, rowHeight * 5, getWidth(), rowHeight * 2);
-    loadButton.setBounds(0, rowHeight * 7, getWidth(), rowHeight);
+    //loadButton.setBounds(0, rowHeight * 7, getWidth(), rowHeight);
 }
 
 /** Implement Button::Listener */
@@ -107,22 +107,22 @@ void DeckGUI::buttonClicked(juce::Button* button)
         // stop playing
         player->stop();
     }
-    if (button == &loadButton)
-    {
-        DBG("DeckGUI::buttonClicked: Load Button was clicked");
+    //if (button == &loadButton)
+    //{
+    //    DBG("DeckGUI::buttonClicked: Load Button was clicked");
 
-        // create a file chooser GUI for the user to select a file
-        juce::FileChooser chooser{ "Select file..." };
-        // if the user selects a file to open, load the file
-        if (chooser.browseForFileToOpen())
-        {
-            // convert the chosen file to a URL and load it
-            auto audioURL = juce::URL{ chooser.getResult() };
-            //player->loadURL(fileURL);
-            //waveformDisplay.loadURL(fileURL);
-            loadURL(audioURL);
-        }
-    }
+    //    // create a file chooser GUI for the user to select a file
+    //    juce::FileChooser chooser{ "Select file..." };
+    //    // if the user selects a file to open, load the file
+    //    if (chooser.browseForFileToOpen())
+    //    {
+    //        // convert the chosen file to a URL and load it
+    //        auto audioURL = juce::URL{ chooser.getResult() };
+    //        //player->loadURL(fileURL);
+    //        //waveformDisplay.loadURL(fileURL);
+    //        loadURL(audioURL);
+    //    }
+    //}
 }
 
 /** Implement Slider::Listener */
