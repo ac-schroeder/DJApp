@@ -45,6 +45,9 @@ public:
     /** Implement Timer */
     void timerCallback() override;
 
+    /** Loads an audio URL to the deck's player */
+    void loadURL(juce::URL audioURL);
+
 private:
     // button components
     juce::TextButton playButton{ "PLAY" };

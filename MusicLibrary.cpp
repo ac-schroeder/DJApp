@@ -21,17 +21,17 @@ MusicLibrary::~MusicLibrary()
 
 }
 
-// can this be a vector of pointers to the MusicTrack objects?
+// Returns the full music library of tracks
 std::vector<MusicTrack> MusicLibrary::getTracks()
 {
     return libraryTracks;
 }
 
-// can this be a pointer to a MusicTrack?
-// TODO: switch this to a smart pointer
+// Returns a pointer to the matching track if a match is found, or else nullptr
+// Design based on https://stackoverflow.com/questions/2639255/return-a-null-object-if-search-result-not-found
 MusicTrack* MusicLibrary::getTrack(juce::String keyword)
 {
-
+    // create a null pointer to return as default, for if no tracks found
     MusicTrack* matchedTrack { nullptr };
     // loop over library tracks to find matching track
     for (MusicTrack& track : libraryTracks)
@@ -40,34 +40,12 @@ MusicTrack* MusicLibrary::getTrack(juce::String keyword)
         {
             matchedTrack = &track; // reassign the pointer to the track
             DBG("The matched track exists! track.filename is " + track.fileName);
-            //DBG("The pointer points to " + matchedTrack->fileName);
-            //DBG("The pointer track has length " + matchedTrack->length);
         }
     }
     return matchedTrack;
 }
-//std::unique_ptr<MusicTrack> MusicLibrary::getTrack(juce::String keyword)
-//{
-//    
-//    std::unique_ptr<MusicTrack> matchedTrack{ nullptr };
-//    DBG("I made it here. do I still have tracks? " + std::to_string(libraryTracks.size()));
-//    // loop over library tracks to find matching track
-//    for (MusicTrack track : libraryTracks)
-//    {
-//        DBG("Here is a library track. it's name is " + track.fileName);
-//        if (track.fileName == keyword)
-//        {
-//            DBG("The matched track exists! track.filename is " + track.fileName);
-//            // update the smart pointer to own a pointer to the matching track
-//            matchedTrack.reset(&track); // reassign the pointer to the track
-//            
-//            DBG("The pointer points to " + matchedTrack->fileName);
-//            DBG("The pointer track has length " + matchedTrack->length);
-//        }
-//    }
-//    return matchedTrack;
-//}
 
+// add a track to the track library
 void MusicLibrary::addTrack(juce::URL audioURL)
 {
     // get the filename from the URL
@@ -77,9 +55,7 @@ void MusicLibrary::addTrack(juce::URL audioURL)
     sourceReader.loadURL(audioURL);
     std::string length{ sourceReader.getTrackLength() };
 
-    // create a new track object and add a pointer to it to the libraryTracks list
-    // NOTE: if you want to use pointers, use smart pointers, or else delete!!
-    // MusicTrack* track{ new MusicTrack{fileName, audioURL, length} };
+    // create a new track object and add to the libraryTracks list
     MusicTrack track{ fileName, audioURL, length };
     libraryTracks.push_back(track);
 }

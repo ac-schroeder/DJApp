@@ -14,6 +14,7 @@
 #include <string>
 #include <JuceHeader.h>
 #include "MusicLibrary.h"
+#include "DeckGUI.h"
 // #include "MusicTrack.h"
 
 
@@ -25,7 +26,9 @@ class PlaylistComponent  : public juce::Component,
                            public juce::Button::Listener
 {
 public:
-    PlaylistComponent(juce::AudioFormatManager& _formatManager);
+    PlaylistComponent(juce::AudioFormatManager& _formatManager, 
+                      DeckGUI* _leftDeck, 
+                      DeckGUI* _rightDeck);
     ~PlaylistComponent() override;
 
     void paint (juce::Graphics&) override;
@@ -60,12 +63,17 @@ private:
     juce::TableListBox tableComponent;
     // the Add Track button to add files to the playlist
     juce::TextButton addTrackButton{ "Add Track" };
+    // the Search  button to search for tracks in the playlist
+    // juce::TextButton searchButton{ "Search" };
 
-    // a vector of MusicTrack objects
+    // the user's music library 
+    MusicLibrary musicLibrary;
+    // the playlist's shown tracks displayed in the table component
     std::vector<MusicTrack> shownTracks;
 
-    // the music library; initialized in PlaylistComponent initializer list
-    MusicLibrary musicLibrary;
+    // pointers to the deck GUI components, for loading tracks
+    DeckGUI* rightDeck;
+    DeckGUI* leftDeck;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlaylistComponent)
 };

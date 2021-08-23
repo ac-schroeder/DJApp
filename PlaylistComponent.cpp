@@ -12,8 +12,12 @@
 #include "PlaylistComponent.h"
 
 //==============================================================================
-PlaylistComponent::PlaylistComponent(juce::AudioFormatManager& _formatManager)
-    : musicLibrary { _formatManager }
+PlaylistComponent::PlaylistComponent(juce::AudioFormatManager& _formatManager, 
+                                     DeckGUI* _leftDeck,
+                                     DeckGUI* _rightDeck)
+    : musicLibrary { _formatManager },
+    leftDeck { _leftDeck },
+    rightDeck { _rightDeck }
 {
     // set the table component's data model
     // this tells the component to call the TableListBoxModel functions
@@ -128,8 +132,10 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
         // check that a custom component does not already exist
         if (existingComponentToUpdate == nullptr)
         {
-            // create a text button component with the row number as its ID
+            // create a text button component for the left deck
             juce::TextButton* leftDeckButton = new juce::TextButton{ "Left Deck" };
+
+            // give it an ID matching the track file name
             juce::String id { shownTracks[rowNumber].fileName };
             leftDeckButton->setComponentID(id);
 
@@ -189,37 +195,38 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
         // get the track number from the component id on the button
         juce::String fileName = button->getComponentID();
 
+        // get the button text to see which deck it is for
+        DeckGUI* deckToUse{ nullptr };
+        if (button->getButtonText() == "Left Deck")
+        {
+            deckToUse = leftDeck;
+        }
+        else if (button->getButtonText() == "Right Deck")
+        {
+            deckToUse = rightDeck;
+        }
+
         DBG("Button clicked! Button Component ID: " + fileName);
         DBG("Button clicked! Track File Name: " + fileName);
-
-        // get the button component name: that is the deck GUI to call
-            // call that deckGUI pointer's loadURL function
-
-
-        // get the button component ID: that is the track title
-            // use it to look up the audioURL of that track 
-                // use getTrack(keyword) and then you have the track object
-            // pass it to the deckGUI pointer's loadURL function
-
-        // QUESTION: Shouldn't this work? it's a pointer to the real track, but the pointer is in scope of this function, so the pointer should be deleted, but the track would persist, to be found again next time the button is clicked. No???
-        
-        MusicTrack* track { musicLibrary.getTrack(fileName) };
-        if (track != nullptr)
-        {
-            DBG("Pointer points to track with name " + track->fileName);
-        }
-        else
-        {
-            DBG("I'm a null pointer");
-        }
+        DBG("Button clicked! Deck to use is " + button->getButtonText());
        
-
-        // QUESTION TO GOOGLE: do smart pointers delete the referenced object when the POINTER goes out of scope?
-        // this makes a smart pointer pointing to the actual track. it should destroy the track after this scope ends?
-        /*std::unique_ptr<MusicTrack> track{ musicLibrary.getTrack(fileName) };
-        if (track != nullptr)
+        // get the relevant track from the music library to load
+        MusicTrack* track { musicLibrary.getTrack(fileName) };
+        if (track != nullptr) // track was found
         {
             DBG("Pointer points to track with name " + track->fileName);
-        }*/
+
+            // load the file to the correct deck
+            deckToUse->loadURL(track->audioURL);
+
+        }
+        else // there was an error looking up the track
+        {
+            DBG("Track could not be found");
+            // TODO: throw exception
+        }
+
+        
+    
     }
 }

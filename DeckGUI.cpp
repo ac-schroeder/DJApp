@@ -117,9 +117,10 @@ void DeckGUI::buttonClicked(juce::Button* button)
         if (chooser.browseForFileToOpen())
         {
             // convert the chosen file to a URL and load it
-            auto fileURL = juce::URL{ chooser.getResult() };
-            player->loadURL(fileURL);
-            waveformDisplay.loadURL(fileURL);
+            auto audioURL = juce::URL{ chooser.getResult() };
+            //player->loadURL(fileURL);
+            //waveformDisplay.loadURL(fileURL);
+            loadURL(audioURL);
         }
     }
 }
@@ -166,17 +167,28 @@ bool DeckGUI::isInterestedInFileDrag(const juce::StringArray& files)
     DBG("DeckGUI::isInterestedInFileDrag");
     return true;
 }
+
 void DeckGUI::filesDropped(const juce::StringArray& files, int x, int y)
 {
     DBG("DeckGUI::filesDropped");
     if (files.size() == 1)
     {
-        player->loadURL(juce::URL(juce::File{ files[0] }));
+        // player->loadURL(juce::URL(juce::File{ files[0] }));
         //  TODO: load waveformdisplay, too?
+
+        loadURL(juce::URL(juce::File{ files[0] }));
     }
 }
 
 void DeckGUI::timerCallback()
 {
     waveformDisplay.setPositionRelative(player->getPositionRelative());
+}
+
+
+/** Loads an audio URL to the deck's player */
+void DeckGUI::loadURL(juce::URL audioURL)
+{
+    player->loadURL(audioURL);
+    waveformDisplay.loadURL(audioURL);
 }

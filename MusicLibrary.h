@@ -22,7 +22,7 @@ public:
 
     // can this be a vector of pointers to the MusicTrack objects?
     std::vector<MusicTrack> getTracks();
-    // can this be a pointer to a MusicTrack?
+    /** Returns a pointer to the matching track if a match is found, or else nullptr */
     MusicTrack* getTrack(juce::String keyword);
     //std::unique_ptr<MusicTrack> getTrack(juce::String keyword);
 
