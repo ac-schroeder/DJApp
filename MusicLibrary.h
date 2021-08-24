@@ -24,18 +24,23 @@ public:
     std::vector<MusicTrack> getTracks();
     /** Returns a pointer to the matching track if a match is found, or else nullptr */
     MusicTrack* getTrack(juce::String keyword);
-    //std::unique_ptr<MusicTrack> getTrack(juce::String keyword);
-
+    /** Adds a track to the music library */
     void addTrack(juce::URL audioURL);
-    void saveLibrary();
-    void loadLibrary();
 
 private:
-    //std::vector<MusicTrack*> libraryTracks;
+    // the music library
     std::vector<MusicTrack> libraryTracks;
+
+    // local file object to store library CSV data
+    juce::File tracksFile;
 
     // an audio player to read meta info about tracks
     DJAudioPlayer sourceReader;
+
+    /** Saves the music library track list to CSV */
+    void saveLibrary();
+    /** Loads the music library track list from CSV */
+    void loadLibrary();
 };
 
 

@@ -34,16 +34,19 @@ PlaylistComponent::PlaylistComponent(juce::AudioFormatManager& _formatManager,
     // make components visible
     addAndMakeVisible(addTrackButton);
     addAndMakeVisible(searchBox);
-    addAndMakeVisible(searchResultsMessageBox);
+    addAndMakeVisible(playlistMessageBox);
     addAndMakeVisible(tableComponent);
+
+    // add clear search button, but do not make visible yet
+    addChildComponent(clearSearchButton);
 
     // set search box properties
     searchBox.setJustification(juce::Justification::centred);
     searchBox.setTextToShowWhenEmpty("SEARCH TRACKS...", juce::Colours::white);
 
-    // set search results message box properties
-    searchResultsMessageBox.setText("Displaying all tracks.",      
-                                    juce::NotificationType::dontSendNotification);
+    // set playlist message box properties
+    playlistMessageBox.setText("Displaying all tracks in your library.",
+                                juce::NotificationType::dontSendNotification);
     // TODO: get this stuff into LookandFeel?
     // TODO: how do you make a border?!?!?
     //juce::BorderSize<int> border{ 12 };
@@ -52,6 +55,7 @@ PlaylistComponent::PlaylistComponent(juce::AudioFormatManager& _formatManager,
     // add listeners
     addTrackButton.addListener(this);
     searchBox.addListener(this);
+    clearSearchButton.addListener(this);
 
 }
 
@@ -68,18 +72,26 @@ void PlaylistComponent::paint (juce::Graphics& g)
 
     g.setColour (juce::Colours::white);
     g.setFont (14.0f);
-    //g.drawText ("PlaylistComponent", getLocalBounds(),
-    //            juce::Justification::centred, true);   // draw some placeholder text
 }
 
 void PlaylistComponent::resized()
 {
     double topBarHeight = getHeight() / 10;
-    double topBarComponentWidth = getWidth() / 3;
-    addTrackButton.setBounds(0, 0, topBarComponentWidth, topBarHeight);
-    searchBox.setBounds(topBarComponentWidth * 2, 0, topBarComponentWidth, topBarHeight);
-    searchResultsMessageBox.setBounds(0, topBarHeight, getWidth(), topBarHeight);
-    tableComponent.setBounds(0, topBarHeight * 2, getWidth(), getHeight() - (topBarHeight*2));
+    double addTrackButtonWidth = getWidth() / 3;
+    double searchBoxWidth = getWidth() / 3;
+    double clearSearchButtonWidth = getWidth() / 3;
+
+
+    addTrackButton.setBounds(0, 0, 
+                        addTrackButtonWidth, topBarHeight);
+    searchBox.setBounds(getWidth() - searchBoxWidth, 0, 
+                        searchBoxWidth, topBarHeight);
+    playlistMessageBox.setBounds(0, topBarHeight,
+                        getWidth() - 80, topBarHeight);
+    clearSearchButton.setBounds(getWidth() - clearSearchButtonWidth, topBarHeight, 
+                        clearSearchButtonWidth, topBarHeight);
+    tableComponent.setBounds(0, topBarHeight * 2, 
+                        getWidth(), getHeight() - (topBarHeight*2));
 }
 
 int PlaylistComponent::getNumRows()
@@ -184,6 +196,7 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
 
 void PlaylistComponent::buttonClicked(juce::Button* button)
 {
+    // add track button
     if (button == &addTrackButton)
     {
         DBG("add track button was clicked");
@@ -193,15 +206,26 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
         // if the user selects a file to open, load the file
         if (chooser.browseForFileToOpen())
         {
-            // convert the chosen file to a URL and load it
-            auto audioURL = juce::URL{ chooser.getResult() };
-            musicLibrary.addTrack(audioURL);
-        }
+            // clear any active search, so full library can be seen
+            clearSearch();
 
-        // update table
-        shownTracks = musicLibrary.getTracks();
-        tableComponent.updateContent();
+            // convert the chosen file to a URL and load it
+            /*auto audioURL = juce::URL{ chooser.getResult() };*/
+            juce::URL audioURL { chooser.getResult() };
+            musicLibrary.addTrack(audioURL);
+
+            // update playlist to show the new track
+            shownTracks = musicLibrary.getTracks();
+            tableComponent.updateContent();
+        }
     }
+    // clear search button
+    else if (button == &clearSearchButton)
+    {
+        // clear the search and re-display whole library
+        clearSearch();
+    }
+    // deck loading buttons in the table rows
     else
     {
         // get the track number from the component id on the button
@@ -245,47 +269,67 @@ void PlaylistComponent::textEditorReturnKeyPressed(juce::TextEditor& textEditor)
 {
     juce::String searchText = textEditor.getText();
 
-    // if search box is cleared, display default message and all library tracks
-    if (searchText.isEmpty())
+    // if search box text is deleted and entered, clear search results
+    if (textEditor.isEmpty())
     {
-        // display search results message
-        searchResultsMessageBox.setText("Displaying all tracks.", 
-                                        juce::NotificationType::dontSendNotification);
-
-        // update the playlist to show all tracks
-        shownTracks.clear();
-        shownTracks = musicLibrary.getTracks();
-        tableComponent.updateContent();
+        // clear the search and revert to displaying whole library
+        clearSearch();
     }
+    // search for the entered term
     else
     {
-        // Search for a track matching the search input
-        MusicTrack* track = musicLibrary.getTrack(searchText);
+        // try to find a track in the library to match the search input
+        MusicTrack* track = musicLibrary.getTrack(searchText);  
+        // if a matching track was found, display results
         if (track != nullptr)
         {
             DBG("A track was found! " + track->fileName);
 
-            // display search results 
-            searchResultsMessageBox.setText("Displaying search results...",
-                juce::NotificationType::dontSendNotification);
-            shownTracks.clear();
+            // update the playlist to show the search results
+            shownTracks.clear(); 
             shownTracks.push_back(*track);
             tableComponent.updateContent();
 
-            // TODO: display clear results button
+            // repaint to update row data in case of consecutive searches, which doesn't change the number of rows and therefore will not be updated by updateContent()
+            repaint();
 
+            // display success message
+            playlistMessageBox.setText("Displaying search results...",
+                juce::NotificationType::dontSendNotification);
+
+            // show the 'clear search' button
+            clearSearchButton.setVisible(true);
         }
+        // if no results were found, show message
         else
         {
             DBG("There was no match for your search: " + searchText);
 
             // display search failure message
-            searchResultsMessageBox.setText("No results for your search were found. Displaying all tracks.", juce::NotificationType::dontSendNotification);
+            playlistMessageBox.setText("No results for your search were found. Displaying all tracks in your library.", juce::NotificationType::dontSendNotification);
 
-            // show all tracks in the playlist
+            // show full music library 
             shownTracks.clear();
             shownTracks = musicLibrary.getTracks();
             tableComponent.updateContent();
         }
     }
+}
+
+void PlaylistComponent::clearSearch()
+{
+    // clear the search results and revert to showing all tracks
+    shownTracks.clear();
+    shownTracks = musicLibrary.getTracks();
+    tableComponent.updateContent();
+
+    // update the playlist message
+    playlistMessageBox.setText("Displaying all tracks in your library.",
+        juce::NotificationType::dontSendNotification);
+
+    // clear the search term from the search box
+    searchBox.setText("");
+
+    // hide the 'clear search' button again
+    clearSearchButton.setVisible(false);
 }

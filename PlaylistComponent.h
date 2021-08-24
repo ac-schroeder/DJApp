@@ -69,8 +69,11 @@ private:
     juce::TextButton addTrackButton{ "ADD TRACK" };
     // the Search  button to search for tracks in the playlist
     juce::TextEditor searchBox;
+    // a button to clear search results
+    juce::TextButton clearSearchButton{ "Clear search" };
     // a message box to inform user of search results
-    juce::Label searchResultsMessageBox;
+    juce::Label playlistMessageBox;
+
 
     // the user's music library 
     MusicLibrary musicLibrary;
@@ -80,6 +83,9 @@ private:
     // pointers to the deck GUI components, for loading tracks
     DeckGUI* rightDeck;
     DeckGUI* leftDeck;
+
+    /** Clears the search box and any shown search results */
+    void clearSearch();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlaylistComponent)
 };

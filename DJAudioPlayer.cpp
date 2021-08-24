@@ -40,25 +40,19 @@ void DJAudioPlayer::releaseResources()
 
 void DJAudioPlayer::loadURL(juce::URL audioURL)
 {
-    // create the AudioFormatReader object from the audio file, 
-    // converting the audio file to an input stream first
-    // we use a pointer "reader" so that the AudioFormatReader object itself persists after loadURL completes
-    // AudioFormatReader itself has object-level scope
+    // convert audioURL to an input stream and create an AudioFormatReader for it
     auto* reader = formatManager.createReaderFor(audioURL.createInputStream(false));
     // check that the file converted correctly
     if (reader != nullptr)
     {
-        // assign a new AudioFormatReaderSource object to a new smart pointer
-        // pass it the AudioFormatReader object made from the audio file
-        // set to true to delete the AudioFormatReader object when... 
-        // ...the AudioFormatReaderSource object is deleted
+        // dynamically create an AudioFormatReaderSource based on the reader
         std::unique_ptr<juce::AudioFormatReaderSource> newSource
-        { new juce::AudioFormatReaderSource(reader, true) };
+            { new juce::AudioFormatReaderSource(reader, true) };
 
-        // create the TransportSource object based on this AudioFormatReaderSource object
+        // wrap in a TransportSource 
         transportSource.setSource(newSource.get(), 0, nullptr,
             reader->sampleRate);
-        // pass the AudioFormatReaderSource object to the class readerSource pointer
+        // move the AudioFormatReaderSource object to the readerSource pointer
         readerSource.reset(newSource.release());
     }
     else
