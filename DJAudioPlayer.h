@@ -12,13 +12,13 @@
 
 #include <JuceHeader.h>
 
-class DJAudioPlayer : public juce::AudioSource 
+class DJAudioPlayer : public juce::AudioSource
 {
 public:
     DJAudioPlayer(juce::AudioFormatManager& _formatManager);
     ~DJAudioPlayer();
 
-    void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
+    void prepareToPlay(int samplesPerBlockExpected, double _sampleRate) override;
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
     void releaseResources() override;
 
@@ -27,6 +27,8 @@ public:
     void setSpeed(double ratio);
     void setPosition(double posInSecs);
     void setPositionRelative(double pos);
+    void setLowShelf(double gain);
+    void setHighShelf(double gain);
 
     void start();
     void stop();
@@ -42,8 +44,17 @@ private:
     juce::AudioFormatManager& formatManager;
     // audio source object; use smart pointer for dynamic instantiation
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource;
-    // wrapper object for readerSource, to control playback
+    // transport wrapper for the audio source, to control playback
     juce::AudioTransportSource transportSource;
-    // wrapper object for transportSource, to control speed
-    juce::ResamplingAudioSource resampleSource{ &transportSource, false, 2 };
+    // filter wrappers for the audio source, to enable filtering frequencies
+    juce::IIRFilterAudioSource lowShelfFilteredSource {&transportSource, false};
+    juce::IIRFilterAudioSource highShelfFilteredSource {&lowShelfFilteredSource, false};
+    // resampling wrapper for the audio source, to control speed
+    juce::ResamplingAudioSource resampleSource{ &highShelfFilteredSource, false, 2 };
+
+    // the sample rate
+    double sampleRate;
+    // the low and high shelf coefficients
+    juce::IIRCoefficients lowShelfCoefficients;
+    juce::IIRCoefficients highShelfCoefficients;
 };

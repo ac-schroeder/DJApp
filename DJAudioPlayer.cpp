@@ -18,8 +18,10 @@ DJAudioPlayer::~DJAudioPlayer()
 {
 }
 
-void DJAudioPlayer::prepareToPlay(int samplesPerBlockExpected, double sampleRate)
+void DJAudioPlayer::prepareToPlay(int samplesPerBlockExpected, double _sampleRate)
 {
+    // store the sample rate
+    sampleRate = _sampleRate;
     // prepare the transport source
     transportSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
     // prepare the resample source, for playback speed control
@@ -116,6 +118,17 @@ void DJAudioPlayer::stop()
 double DJAudioPlayer::getPositionRelative()
 {
     return transportSource.getCurrentPosition() / transportSource.getLengthInSeconds();
+}
+
+void DJAudioPlayer::setLowShelf(double gain)
+{
+    lowShelfCoefficients = juce::IIRCoefficients::makeLowShelf(sampleRate, 400, 1, gain);
+    lowShelfFilteredSource.setCoefficients(lowShelfCoefficients);
+}
+void DJAudioPlayer::setHighShelf(double gain)
+{
+    highShelfCoefficients = juce::IIRCoefficients::makeHighShelf(sampleRate, 4000, 1, gain);
+    highShelfFilteredSource.setCoefficients(highShelfCoefficients);
 }
 
 /** get the track length */

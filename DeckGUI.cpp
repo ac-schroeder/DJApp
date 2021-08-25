@@ -23,13 +23,13 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     // make button components visible
     addAndMakeVisible(playButton);
     addAndMakeVisible(stopButton);
-    //addAndMakeVisible(loadButton);
 
     // make slider components visible
     addAndMakeVisible(gainSlider);
-    //addAndMakeVisible(pitchSlider);
     addAndMakeVisible(speedSlider);
     addAndMakeVisible(positionSlider);
+    addAndMakeVisible(lowShelfGainSlider);
+    addAndMakeVisible(highShelfGainSlider);
 
     // make waveform display visible
     addAndMakeVisible(waveformDisplay);
@@ -37,18 +37,20 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     // add button listeners
     playButton.addListener(this);
     stopButton.addListener(this);
-    //loadButton.addListener(this);
 
     // add slider listeners
     gainSlider.addListener(this);
-    //pitchSlider.addListener(this);
     speedSlider.addListener(this);
     positionSlider.addListener(this);
+    lowShelfGainSlider.addListener(this);
+    highShelfGainSlider.addListener(this);
     
     // restrict slider ranges
     gainSlider.setRange(0.0, 1.0);
     speedSlider.setRange(0.0, 100.0);
     positionSlider.setRange(0.0, 1.0);
+    lowShelfGainSlider.setRange(0.01, 1.0);
+    highShelfGainSlider.setRange(0.01, 1.0);
 
     // start the timer to coordinate audio playback and waveform display
     startTimer(100);
@@ -74,18 +76,17 @@ void DeckGUI::paint (juce::Graphics& g)
 
 void DeckGUI::resized()
 {
-    //double rowHeight = getHeight() / 9;
-    double rowHeight = getHeight() / 7;
+    double rowHeight = getHeight() / 9;
 
     // set resizing bounds on components
     playButton.setBounds(0, 0, getWidth(), rowHeight);
     stopButton.setBounds(0, rowHeight, getWidth(), rowHeight);
     gainSlider.setBounds(0, rowHeight * 2, getWidth(), rowHeight);
-    //pitchSlider.setBounds(0, rowHeight * 3, getWidth(), rowHeight);
     speedSlider.setBounds(0, rowHeight * 3, getWidth(), rowHeight);
     positionSlider.setBounds(0, rowHeight * 4, getWidth(), rowHeight);
-    waveformDisplay.setBounds(0, rowHeight * 5, getWidth(), rowHeight * 2);
-    //loadButton.setBounds(0, rowHeight * 7, getWidth(), rowHeight);
+    lowShelfGainSlider.setBounds(0, rowHeight * 5, getWidth(), rowHeight);
+    highShelfGainSlider.setBounds(0, rowHeight * 6, getWidth(), rowHeight);
+    waveformDisplay.setBounds(0, rowHeight * 7, getWidth(), rowHeight * 2);
 }
 
 /** Implement Button::Listener */
@@ -96,10 +97,7 @@ void DeckGUI::buttonClicked(juce::Button* button)
     {
         DBG("DeckGUI::buttonClicked: Play Button was clicked");
         // begin playing
-        //player->setPosition(0);
         player->start();
-        // reset dphase
-        // dphase = 0;
     }
     if (button == &stopButton)
     {
@@ -107,22 +105,6 @@ void DeckGUI::buttonClicked(juce::Button* button)
         // stop playing
         player->stop();
     }
-    //if (button == &loadButton)
-    //{
-    //    DBG("DeckGUI::buttonClicked: Load Button was clicked");
-
-    //    // create a file chooser GUI for the user to select a file
-    //    juce::FileChooser chooser{ "Select file..." };
-    //    // if the user selects a file to open, load the file
-    //    if (chooser.browseForFileToOpen())
-    //    {
-    //        // convert the chosen file to a URL and load it
-    //        auto audioURL = juce::URL{ chooser.getResult() };
-    //        //player->loadURL(fileURL);
-    //        //waveformDisplay.loadURL(fileURL);
-    //        loadURL(audioURL);
-    //    }
-    //}
 }
 
 /** Implement Slider::Listener */
@@ -133,16 +115,6 @@ void DeckGUI::sliderValueChanged(juce::Slider* slider)
         DBG("DeckGUI::sliderValueChanged: gainSlider " + std::to_string(slider->getValue()));
         player->setGain(slider->getValue());
     }
-    // implement pitch slider effects
-    //if (slider == &pitchSlider)
-    //{
-    //    DBG("DeckGUI::sliderValueChanged: pitchSlider moved " + std::to_string(slider->getValue()));
-    //    // phase change for sawtooth waveform
-    //    //dphase = pitchSlider.getValue() * 0.001;
-    //     
-    //    // phase change for sine waveform
-    //    //dphase = volumeSlider.getValue() * 0.01;
-    //}
     // implement gain slider effects
     if (slider == &speedSlider)
     {
@@ -159,6 +131,15 @@ void DeckGUI::sliderValueChanged(juce::Slider* slider)
         DBG("DeckGUI::sliderValueChanged: positionSlider " + std::to_string(slider->getValue()));
         player->setPositionRelative(slider->getValue());
     }
+    // implement low and high shelf frequency sliders
+    if (slider == &lowShelfGainSlider)
+    {
+        player->setLowShelf(slider->getValue());
+    }
+    if (slider == &highShelfGainSlider)
+    {
+        player->setHighShelf(slider->getValue());
+    }
 }
 
 /** Implement FileDragAndDrop */
@@ -173,9 +154,6 @@ void DeckGUI::filesDropped(const juce::StringArray& files, int x, int y)
     DBG("DeckGUI::filesDropped");
     if (files.size() == 1)
     {
-        // player->loadURL(juce::URL(juce::File{ files[0] }));
-        //  TODO: load waveformdisplay, too?
-
         loadURL(juce::URL(juce::File{ files[0] }));
     }
 }

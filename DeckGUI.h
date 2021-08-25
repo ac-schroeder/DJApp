@@ -49,6 +49,9 @@ public:
     void loadURL(juce::URL audioURL);
 
 private:
+    // pointer to audio player
+    DJAudioPlayer* player;
+
     // button components
     juce::TextButton playButton{ "PLAY" };
     juce::TextButton stopButton{ "STOP" };
@@ -56,14 +59,12 @@ private:
 
     // slider components
     juce::Slider gainSlider;
-    //juce::Slider pitchSlider;
     juce::Slider speedSlider;
     juce::Slider positionSlider;
+    juce::Slider lowShelfGainSlider;
+    juce::Slider highShelfGainSlider;
 
-    // pointer to audio player
-    DJAudioPlayer* player;
-
-    // waveform display component; initialised in DeckGUI initialiser list
+    // waveform display component
     WaveformDisplay waveformDisplay;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DeckGUI)
