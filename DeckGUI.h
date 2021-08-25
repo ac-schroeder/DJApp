@@ -13,6 +13,7 @@
 #include <JuceHeader.h>
 #include "DJAudioPlayer.h"
 #include "WaveformDisplay.h"
+#include "PositionDisplay.h"
 
 //==============================================================================
 /*
@@ -63,6 +64,9 @@ private:
     juce::Slider positionSlider;
     juce::Slider lowShelfGainSlider;
     juce::Slider highShelfGainSlider;
+
+    // custom position display component
+    PositionDisplay positionDisplay;
 
     // waveform display component
     WaveformDisplay waveformDisplay;

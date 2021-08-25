@@ -125,6 +125,7 @@ void DJAudioPlayer::setLowShelf(double gain)
     lowShelfCoefficients = juce::IIRCoefficients::makeLowShelf(sampleRate, 400, 1, gain);
     lowShelfFilteredSource.setCoefficients(lowShelfCoefficients);
 }
+
 void DJAudioPlayer::setHighShelf(double gain)
 {
     highShelfCoefficients = juce::IIRCoefficients::makeHighShelf(sampleRate, 4000, 1, gain);

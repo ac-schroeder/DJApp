@@ -25,11 +25,14 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     addAndMakeVisible(stopButton);
 
     // make slider components visible
-    addAndMakeVisible(gainSlider);
+    /*addAndMakeVisible(gainSlider);
     addAndMakeVisible(speedSlider);
     addAndMakeVisible(positionSlider);
     addAndMakeVisible(lowShelfGainSlider);
-    addAndMakeVisible(highShelfGainSlider);
+    addAndMakeVisible(highShelfGainSlider);*/
+
+    // make position display visible
+    addAndMakeVisible(positionDisplay);
 
     // make waveform display visible
     addAndMakeVisible(waveformDisplay);
@@ -81,11 +84,12 @@ void DeckGUI::resized()
     // set resizing bounds on components
     playButton.setBounds(0, 0, getWidth(), rowHeight);
     stopButton.setBounds(0, rowHeight, getWidth(), rowHeight);
-    gainSlider.setBounds(0, rowHeight * 2, getWidth(), rowHeight);
-    speedSlider.setBounds(0, rowHeight * 3, getWidth(), rowHeight);
-    positionSlider.setBounds(0, rowHeight * 4, getWidth(), rowHeight);
-    lowShelfGainSlider.setBounds(0, rowHeight * 5, getWidth(), rowHeight);
-    highShelfGainSlider.setBounds(0, rowHeight * 6, getWidth(), rowHeight);
+    //gainSlider.setBounds(0, rowHeight * 2, getWidth(), rowHeight);
+    //speedSlider.setBounds(0, rowHeight * 3, getWidth(), rowHeight);
+    //positionSlider.setBounds(0, rowHeight * 4, getWidth(), rowHeight);
+    //lowShelfGainSlider.setBounds(0, rowHeight * 5, getWidth(), rowHeight);
+    //highShelfGainSlider.setBounds(0, rowHeight * 6, getWidth(), rowHeight);
+    positionDisplay.setBounds(0, rowHeight * 2, getWidth() / 2, rowHeight * 5);
     waveformDisplay.setBounds(0, rowHeight * 7, getWidth(), rowHeight * 2);
 }
 
@@ -110,12 +114,13 @@ void DeckGUI::buttonClicked(juce::Button* button)
 /** Implement Slider::Listener */
 void DeckGUI::sliderValueChanged(juce::Slider* slider)
 {
+    // implement gain slider
     if (slider == &gainSlider)
     {
         DBG("DeckGUI::sliderValueChanged: gainSlider " + std::to_string(slider->getValue()));
         player->setGain(slider->getValue());
     }
-    // implement gain slider effects
+    // implement speed effects
     if (slider == &speedSlider)
     {
         DBG("DeckGUI::sliderValueChanged: speedSlider " + std::to_string(slider->getValue()));
@@ -131,11 +136,12 @@ void DeckGUI::sliderValueChanged(juce::Slider* slider)
         DBG("DeckGUI::sliderValueChanged: positionSlider " + std::to_string(slider->getValue()));
         player->setPositionRelative(slider->getValue());
     }
-    // implement low and high shelf frequency sliders
+    // implement low shelf gain slider
     if (slider == &lowShelfGainSlider)
     {
         player->setLowShelf(slider->getValue());
     }
+    // implement high shelf gain slider
     if (slider == &highShelfGainSlider)
     {
         player->setHighShelf(slider->getValue());
