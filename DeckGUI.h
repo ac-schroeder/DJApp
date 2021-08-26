@@ -66,7 +66,7 @@ private:
     juce::Slider highShelfGainSlider;
 
     // custom position display component
-    PositionDisplay positionDisplay;
+    PositionDisplay positionDisplay{ player->getTransportSource() };
 
     // waveform display component
     WaveformDisplay waveformDisplay;

@@ -89,7 +89,7 @@ void DeckGUI::resized()
     //positionSlider.setBounds(0, rowHeight * 4, getWidth(), rowHeight);
     //lowShelfGainSlider.setBounds(0, rowHeight * 5, getWidth(), rowHeight);
     //highShelfGainSlider.setBounds(0, rowHeight * 6, getWidth(), rowHeight);
-    positionDisplay.setBounds(0, rowHeight * 2, getWidth() / 2, rowHeight * 5);
+    positionDisplay.setBounds(0, rowHeight * 2, rowHeight * 5, rowHeight * 5);
     waveformDisplay.setBounds(0, rowHeight * 7, getWidth(), rowHeight * 2);
 }
 
@@ -167,6 +167,7 @@ void DeckGUI::filesDropped(const juce::StringArray& files, int x, int y)
 void DeckGUI::timerCallback()
 {
     waveformDisplay.setPositionRelative(player->getPositionRelative());
+    positionDisplay.setPositionRelative(player->getPositionRelative());
 }
 
 

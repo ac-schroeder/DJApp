@@ -22,6 +22,9 @@ public:
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
     void releaseResources() override;
 
+    // take this out! Unless?
+    juce::AudioTransportSource* getTransportSource();
+
     void loadURL(juce::URL audioURL);
     void setGain(double gain);
     void setSpeed(double ratio);

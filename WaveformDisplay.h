@@ -37,8 +37,7 @@ public:
     void setPositionRelative(double _position);
 
 private:
-    // audio thumbnail for displaying waveform; initialised in WaveformDisplay initialiser list
-    // note to me: AudioThumbnail's constructor requires parameters. the only reason we can declare this here without instantiating it is because in the constructor initialiser list for WaveformDisplay, we initialize this object with its parameters!
+    // audio thumbnail for displaying waveform
     juce::AudioThumbnail audioThumb;
     // flag to decide whether to paint the waveform to the component
     bool fileLoaded;

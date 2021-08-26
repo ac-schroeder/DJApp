@@ -30,12 +30,6 @@ public:
 
 private:
     //==============================================================================
-    // sound sample modification settings
-    //juce::Random rand;
-    //double phase;   // sample phase
-    //double dphase;  // phase difference
-    //float gain;     // sample gain 
-
     // shared AudioFormatManager for all audio players and thumbnails
     juce::AudioFormatManager formatManager;
     // shared AudioThumbnailCache for all deck waveform AudioThumbnail objects

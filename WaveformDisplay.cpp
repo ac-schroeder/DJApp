@@ -61,15 +61,12 @@ void WaveformDisplay::paint (juce::Graphics& g)
 
 void WaveformDisplay::resized()
 {
-    // This method is where you should set the bounds of any child
-    // components that your component contains..
-
 }
 
 /** Implement ChangeListener */
 void WaveformDisplay::changeListenerCallback(juce::ChangeBroadcaster* source)
 {
-    DBG("Change received");
+    DBG("WaveformDisplay: Change received");
     repaint();
 }
 

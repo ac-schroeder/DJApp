@@ -40,6 +40,12 @@ void DJAudioPlayer::releaseResources()
     resampleSource.releaseResources();
 }
 
+// TODO: Take this out! Unless?
+juce::AudioTransportSource* DJAudioPlayer::getTransportSource()
+{
+    return &transportSource;
+}
+
 void DJAudioPlayer::loadURL(juce::URL audioURL)
 {
     // convert audioURL to an input stream and create an AudioFormatReader for it
