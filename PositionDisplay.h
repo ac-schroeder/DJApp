@@ -11,6 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "ToneArmComponent.h"
 #include "DJAudioPlayer.h"
 
 //==============================================================================
@@ -38,11 +39,22 @@ private:
     // TODO: Take this out! Unless... ?
     juce::AudioTransportSource* transportSource;
 
-    // flag to decide whether to paint the tone arm position to the component
-    // Do this only if you need to use transport source anyway
-    bool fileLoaded;
     // the relative position of the playhead
     double position{ 0 };
+
+    // layout variables
+    int componentSize;
+    int margin;
+    // the draw coordinates for the record player components
+    int turntable_x;
+    int turntable_y;
+    int tonearm_x;
+    int tonearm_y;
+
+    // the record player components
+    // Turntable turntable;
+    ToneArmComponent toneArm;
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PositionDisplay)
 };
