@@ -25,11 +25,11 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     addAndMakeVisible(stopButton);
 
     // make slider components visible
-    /*addAndMakeVisible(gainSlider);
-    addAndMakeVisible(speedSlider);
+    //addAndMakeVisible(gainSlider);
+    //addAndMakeVisible(speedSlider);
     addAndMakeVisible(positionSlider);
-    addAndMakeVisible(lowShelfGainSlider);
-    addAndMakeVisible(highShelfGainSlider);*/
+    //addAndMakeVisible(lowShelfGainSlider);
+    //addAndMakeVisible(highShelfGainSlider);
 
     // make position display visible
     addAndMakeVisible(positionDisplay);
@@ -84,12 +84,13 @@ void DeckGUI::resized()
     // set resizing bounds on components
     playButton.setBounds(0, 0, getWidth(), rowHeight);
     stopButton.setBounds(0, rowHeight, getWidth(), rowHeight);
+    positionDisplay.setBounds(0, rowHeight * 2, rowHeight * 4, rowHeight * 4);
     //gainSlider.setBounds(0, rowHeight * 2, getWidth(), rowHeight);
     //speedSlider.setBounds(0, rowHeight * 3, getWidth(), rowHeight);
-    //positionSlider.setBounds(0, rowHeight * 4, getWidth(), rowHeight);
+    positionSlider.setBounds(0, rowHeight * 6, getWidth(), rowHeight);
     //lowShelfGainSlider.setBounds(0, rowHeight * 5, getWidth(), rowHeight);
     //highShelfGainSlider.setBounds(0, rowHeight * 6, getWidth(), rowHeight);
-    positionDisplay.setBounds(0, rowHeight * 2, rowHeight * 5, rowHeight * 5);
+    
     waveformDisplay.setBounds(0, rowHeight * 7, getWidth(), rowHeight * 2);
 }
 

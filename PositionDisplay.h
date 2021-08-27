@@ -43,13 +43,14 @@ private:
     double position{ 0 };
 
     // layout variables
-    int componentSize;
-    int margin;
-    // the draw coordinates for the record player components
-    int turntable_x;
-    int turntable_y;
-    int tonearm_x;
-    int tonearm_y;
+    float componentSize;
+    float margin;
+
+    // coordinate points
+    juce::Point<float> turntableCentre{};
+    juce::Point<float> tonearmBase{};
+    juce::Point<float> tonearmNeedleStart{};
+    juce::Point<float> tonearmNeedleEnd{};
 
     // the record player components
     // Turntable turntable;

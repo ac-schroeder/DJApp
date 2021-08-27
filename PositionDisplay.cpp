@@ -21,7 +21,7 @@ PositionDisplay::PositionDisplay(juce::AudioTransportSource* _transportSource)
     // TODO: Take this out! Unless... ?
     transportSource->addChangeListener(this);
 
-    // add the tone arm graphic
+    // add the tone arm component
     addAndMakeVisible(toneArm);
 }
 
@@ -33,65 +33,68 @@ void PositionDisplay::paint (juce::Graphics& g)
 {
     // clear the background
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   
-
     g.setColour (juce::Colours::grey);
 
     // set layout variables
+    // todo: set the size to square and just use width or height here
     componentSize = juce::jmin(getWidth(), getHeight());
     margin = componentSize * 0.1;
-    turntable_x = getWidth() / 2;
-    turntable_y = getHeight() / 2;
-    
-    tonearm_x = componentSize - margin - 15;
-    tonearm_y = margin;
-    toneArm.setBasePosition(tonearm_x, tonearm_y);
-    
-    // calculate turntable positions
-    int turntableDiameter = componentSize - (margin * 2);
-    int turntableRadius = turntableDiameter / 2;
-    int turntableInnerDiameter = turntableDiameter * 0.35;
-    int turntableInnerRadius = turntableInnerDiameter / 2;
-    int vinylLength = turntableRadius - turntableInnerRadius;
+
+    // set up turntable center point
+    turntableCentre.setXY(getWidth() / 2, getHeight() / 2);
+
+    // set up the tone arm base point
+    // TODO: make a better way to calculate tonearm base, to be resizeable
+    tonearmBase.setXY(componentSize - margin, margin + 12);
+
+    // TODO: Now call toneArm.setBase? or...? how to send this point to the tonearm component?
+    // Maybe I need to hard code this in the constructor? seems it might not work to send it here
+    // What logic below, if any, should be in the tonearm component?
+   
+    // set turntable radii
+    float turntableRadius = turntableCentre.getX() - margin;
+    float turntableInnerRadius = turntableRadius * 0.35;
 
     // draw the turntable
-    g.drawEllipse(margin, margin, turntableDiameter, turntableDiameter, 1);
-    g.drawEllipse(margin + vinylLength, margin + vinylLength,
-                  turntableInnerDiameter, turntableInnerDiameter, 1);
+    g.drawEllipse(turntableCentre.getX() - turntableRadius,
+                  turntableCentre.getY() - turntableRadius,
+                  turntableRadius * 2, 
+                  turntableRadius * 2, 
+                  1);
+    g.drawEllipse(turntableCentre.getX() - turntableInnerRadius,
+                  turntableCentre.getY() - turntableInnerRadius,
+                  turntableInnerRadius * 2,
+                  turntableInnerRadius * 2,
+                  1);
 
-    // get the needle track path angle
-    const long double pi = 3.141592653589793238462643383279502884L;
-    float needleTrackAngle = 35 * (pi / 180);
+    // get the needle start and stop points on the turntable
+    float needleTrackAngle = 35 * (juce::MathConstants<float>::pi / 180);
+    tonearmNeedleStart = turntableCentre.getPointOnCircumference(turntableRadius,       
+        needleTrackAngle);
+    tonearmNeedleEnd = turntableCentre.getPointOnCircumference(turntableInnerRadius, 
+        needleTrackAngle);
 
-    // the end coordinates of the tone arm needle track path
-    float end_x = turntable_x + (turntableInnerRadius * std::cos(needleTrackAngle));
-    float end_y = turntable_y + (turntableInnerRadius * std::sin(needleTrackAngle));
-    // the beginning coordinates of the tone arm needle track path
-    float start_x = turntable_x + (turntableRadius * std::cos(needleTrackAngle));
-    float start_y = turntable_y + (turntableRadius * std::sin(needleTrackAngle));
+    // get the angle difference between start and stop positions
+    float startPositionAngle = tonearmBase.getAngleToPoint(tonearmNeedleStart);
+    float endPositionAngle = tonearmBase.getAngleToPoint(tonearmNeedleEnd);
+    float angleDifference = endPositionAngle - startPositionAngle;
 
-    // mark the end coordinates
-    g.setColour(juce::Colours::red);
-    g.drawEllipse(end_x, end_y, 2, 2, 2);
-    // mark the starting coordinates
-    g.setColour(juce::Colours::red);
-    g.drawEllipse(start_x, start_y, 2, 2, 2);
 
-    // Check if the playhead position has progressed into the track
-    if (position > 0)
+    // if track is playing, update the tonearm needle
+    if (position >= 0)
     {
-        float distanceIntoTrack = position * vinylLength;
-        float newRadius = turntableRadius - distanceIntoTrack;
+        // calculate the new tonearm angle proportionally to position in track
+        float angleProgress = angleDifference * position;
+        float currentAngle = startPositionAngle + angleProgress;
 
-        float needle_x = turntable_x + (newRadius * std::cos(needleTrackAngle));
-        float needle_y = turntable_y + (newRadius * std::sin(needleTrackAngle));
-
-        // call toneArmComponent.updateNeedlePosition(x, y) with the above coords.
-        toneArm.updateNeedlePosition(needle_x, needle_y);
+        // send the new angle to the tonearm to redraw its needle position
+        // toneArm.updateNeedlePosition(currentAngle);
     }
 }
 
 void PositionDisplay::resized()
 {
+    // user parent container size for the tonearm component, to overlay
     toneArm.setBounds(getLocalBounds());
 }
 

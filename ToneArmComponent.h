@@ -24,15 +24,15 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
 
-    void setBasePosition(int x, int y);
-    void updateNeedlePosition(float x, float y);
+    //void setBasePosition(int x, int y);
+    //void updateNeedlePosition(float x, float y);
 
 private:
     // drawing coordinates
-    int base_x;
-    int base_y;
-    float needlePosition_x;
-    float needlePosition_y;
+    //int base_x;
+    //int base_y;
+    //float needlePosition_x;
+    //float needlePosition_y;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ToneArmComponent)
 };
