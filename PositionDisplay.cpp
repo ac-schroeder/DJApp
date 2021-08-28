@@ -36,24 +36,22 @@ void PositionDisplay::paint (juce::Graphics& g)
     g.setColour (juce::Colours::grey);
 
     // set layout variables
-    // todo: set the size to square and just use width or height here
-    componentSize = juce::jmin(getWidth(), getHeight());
+    componentSize = getWidth();
     margin = componentSize * 0.1;
 
-    // set up turntable center point
+    // set up turntable center point and radii
     turntableCentre.setXY(getWidth() / 2, getHeight() / 2);
-
-    // set up the tone arm base point
-    // TODO: make a better way to calculate tonearm base, to be resizeable
-    tonearmBase.setXY(componentSize - margin, margin + 12);
-
-    // TODO: Now call toneArm.setBase? or...? how to send this point to the tonearm component?
-    // Maybe I need to hard code this in the constructor? seems it might not work to send it here
-    // What logic below, if any, should be in the tonearm component?
-   
-    // set turntable radii
     float turntableRadius = turntableCentre.getX() - margin;
     float turntableInnerRadius = turntableRadius * 0.35;
+
+    // set up the tone arm base point and base radii
+    float toneArmBaseRadius = turntableRadius * 0.25;
+    toneArmBase.setXY(componentSize - margin, margin + 12);
+    toneArm.setBasePosition(toneArmBase, toneArmBaseRadius);
+
+
+    // What logic below, if any, should be in the tone arm component?
+
 
     // draw the turntable
     g.drawEllipse(turntableCentre.getX() - turntableRadius,
@@ -69,32 +67,32 @@ void PositionDisplay::paint (juce::Graphics& g)
 
     // get the needle start and stop points on the turntable
     float needleTrackAngle = 35 * (juce::MathConstants<float>::pi / 180);
-    tonearmNeedleStart = turntableCentre.getPointOnCircumference(turntableRadius,       
+    toneArmNeedleStart = turntableCentre.getPointOnCircumference(turntableRadius,       
         needleTrackAngle);
-    tonearmNeedleEnd = turntableCentre.getPointOnCircumference(turntableInnerRadius, 
+    toneArmNeedleEnd = turntableCentre.getPointOnCircumference(turntableInnerRadius, 
         needleTrackAngle);
 
     // get the angle difference between start and stop positions
-    float startPositionAngle = tonearmBase.getAngleToPoint(tonearmNeedleStart);
-    float endPositionAngle = tonearmBase.getAngleToPoint(tonearmNeedleEnd);
+    float startPositionAngle = toneArmBase.getAngleToPoint(toneArmNeedleStart);
+    float endPositionAngle = toneArmBase.getAngleToPoint(toneArmNeedleEnd);
     float angleDifference = endPositionAngle - startPositionAngle;
 
 
-    // if track is playing, update the tonearm needle
+    // if track is playing, update the tone arm needle
     if (position >= 0)
     {
-        // calculate the new tonearm angle proportionally to position in track
+        // calculate the new tone arm angle proportionally to position in track
         float angleProgress = angleDifference * position;
         float currentAngle = startPositionAngle + angleProgress;
 
-        // send the new angle to the tonearm to redraw its needle position
+        // send the new angle to the tone arm to redraw its needle position
         // toneArm.updateNeedlePosition(currentAngle);
     }
 }
 
 void PositionDisplay::resized()
 {
-    // user parent container size for the tonearm component, to overlay
+    // user parent container size for the tone arm component, to overlay
     toneArm.setBounds(getLocalBounds());
 }
 

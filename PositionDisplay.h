@@ -48,9 +48,9 @@ private:
 
     // coordinate points
     juce::Point<float> turntableCentre{};
-    juce::Point<float> tonearmBase{};
-    juce::Point<float> tonearmNeedleStart{};
-    juce::Point<float> tonearmNeedleEnd{};
+    juce::Point<float> toneArmBase{};
+    juce::Point<float> toneArmNeedleStart{};
+    juce::Point<float> toneArmNeedleEnd{};
 
     // the record player components
     // Turntable turntable;
