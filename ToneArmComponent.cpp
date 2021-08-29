@@ -38,17 +38,16 @@ void ToneArmComponent::paint (juce::Graphics& g)
                   1);
 
     // draw the tonearm arm
-    //g.drawLine(base_x - 2, base_y + 2, needlePosition_x - 2, needlePosition_y + 2, 4);
-
-    //// draw the needle
-    ////g.fillRect(needlePosition_x)
-    //
-
-    //// draw the needle position
-    //g.setColour(juce::Colours::lightgoldenrodyellow);
-    //g.drawEllipse(needlePosition_x, needlePosition_y, 1, 1, 1);
-
-
+    juce::Path arm;
+    arm.addLineSegment(juce::Line<float> { toneArmBase.getX(),
+                                           toneArmBase.getY(),
+                                           elbowPosition.getX(),
+                                           elbowPosition.getY() }, 1);
+    arm.addLineSegment(juce::Line<float> { elbowPosition.getX(),
+                                           elbowPosition.getY(),
+                                           needlePosition.getX(),
+                                           needlePosition.getY() }, 1);
+    g.strokePath(arm, juce::PathStrokeType{ 4 });
 }
 
 void ToneArmComponent::resized()
@@ -57,13 +56,22 @@ void ToneArmComponent::resized()
 }
 
 
-void ToneArmComponent::setBasePosition(juce::Point<float>& _toneArmBase, float _baseRadius)
+void ToneArmComponent::setPositionAndSize(juce::Point<float>& _toneArmBase,
+                                          juce::Point<float>& toneArmNeedleStart,
+                                          float _baseRadius)
 {
+    // store the base point
     toneArmBase = _toneArmBase;
+    // store the base radius
     baseRadius = _baseRadius;
+    // calculate and store the arm distance
+    armDistance = toneArmBase.getDistanceFrom(toneArmNeedleStart);
 }
 
-void ToneArmComponent::updateNeedlePosition(juce::Point<float>& _needlePosition)
+void ToneArmComponent::updateNeedlePosition(float currentAngle)
 {
-    needlePosition = _needlePosition;
+    // update the needle position by rotating the arm by the current angle
+    needlePosition = toneArmBase.getPointOnCircumference(armDistance, currentAngle);
+    float elbowAngle = currentAngle - (11 * (juce::MathConstants<float>::pi / 180));
+    elbowPosition = toneArmBase.getPointOnCircumference(armDistance * 0.63, elbowAngle);
 }
