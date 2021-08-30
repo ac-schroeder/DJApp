@@ -20,31 +20,28 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
         formatManagerToUse,       // AudioFormatManager: to send to AudioThumbnail
         cacheToUse}               // AudioThumbnailCache: to send to AudioThumbnail
 {
-    // make visible the main component blocks
+    // set up components
+    header.setText("Load a track below to get started...", juce::NotificationType::dontSendNotification);
+
+    // add components
     addAndMakeVisible(header);
-
-    // make button components visible
+    addAndMakeVisible(startStopControls);
     addAndMakeVisible(playButton);
+    addAndMakeVisible(pauseButton);
     addAndMakeVisible(stopButton);
-
-    // make slider components visible
-    //addAndMakeVisible(gainSlider);
-    //addAndMakeVisible(speedSlider);
-    addAndMakeVisible(positionSlider);
-    //addAndMakeVisible(lowShelfGainSlider);
-    //addAndMakeVisible(highShelfGainSlider);
-
-    // make turntable display visible
+    addAndMakeVisible(gainSlider);
     addAndMakeVisible(turntableDisplay);
-
-    // make waveform display visible
+    addAndMakeVisible(frequencyControls);
+    addAndMakeVisible(lowShelfGainSlider);
+    addAndMakeVisible(highShelfGainSlider);
+    addAndMakeVisible(playbackControls);
+    addAndMakeVisible(speedSlider);
+    addAndMakeVisible(positionSlider);
     addAndMakeVisible(waveformDisplay);
 
-    // add button listeners
+    // add listeners
     playButton.addListener(this);
     stopButton.addListener(this);
-
-    // add slider listeners
     gainSlider.addListener(this);
     speedSlider.addListener(this);
     positionSlider.addListener(this);
@@ -78,25 +75,44 @@ void DeckGUI::paint (juce::Graphics& g)
 
 void DeckGUI::resized()
 {
-    //double rowHeight = getHeight() / 10;
-
-    //// set resizing bounds on components
-    //playButton.setBounds(0, 0, getWidth(), rowHeight);
-    //stopButton.setBounds(0, rowHeight, getWidth(), rowHeight);
-    //turntableDisplay.setBounds(0, rowHeight * 2, rowHeight * 5, rowHeight * 5);
-    ////gainSlider.setBounds(0, rowHeight * 2, getWidth(), rowHeight);
-    ////speedSlider.setBounds(0, rowHeight * 3, getWidth(), rowHeight);
-    //positionSlider.setBounds(0, rowHeight * 7, getWidth(), rowHeight);
-    ////lowShelfGainSlider.setBounds(0, rowHeight * 5, getWidth(), rowHeight);
-    ////highShelfGainSlider.setBounds(0, rowHeight * 6, getWidth(), rowHeight);
-    //
-    //waveformDisplay.setBounds(0, rowHeight * 8, getWidth(), rowHeight * 2);
-
     auto area = getLocalBounds();
 
-    auto headerHeight = 36;
-    header.setBounds(area.removeFromTop(headerHeight));
-    
+    /*==== Block Section Bounds ====*/
+
+    // header section
+    header.setBounds(area.removeFromTop(36));
+
+    // waveform display section
+    waveformDisplay.setBounds(area.removeFromBottom(area.getHeight() / 5));
+
+    // playback controls section
+    auto playbackControlsArea = area.removeFromBottom(area.getHeight() / 5);
+    playbackControls.setBounds(playbackControlsArea);
+
+    // frequency controls section
+    auto frequencyControlsArea = area.removeFromRight(area.getWidth() * 0.6);
+    frequencyControls.setBounds(frequencyControlsArea);
+
+    // start-stop controls section
+    auto startStopControlsArea = area.removeFromTop(area.getHeight() * 0.23);
+    startStopControls.setBounds(startStopControlsArea);
+
+    // volume slider
+    gainSlider.setBounds(area.removeFromTop(area.getHeight() / 4));
+
+    // turntable display - set to be square and centered horizontally
+    auto turntableDimension = juce::jmin(area.getHeight(), area.getWidth());
+    auto turntableX = area.getX() + ((area.getWidth() - turntableDimension) / 2);
+    turntableDisplay.setBounds(turntableX, area.getY(), turntableDimension, turntableDimension);
+
+    /*=== Section Subcomponent Bounds ===*/
+
+    // start-stop buttons
+    auto buttonHeight = 40;
+    auto buttonWidth = 40;
+    playButton.setBounds(startStopControlsArea.removeFromLeft(buttonWidth).reduced(20));
+    pauseButton.setBounds(startStopControlsArea.removeFromLeft(buttonWidth).reduced(20));
+    stopButton.setBounds(startStopControlsArea.removeFromLeft(buttonWidth).reduced(20));
 }
 
 /** Implement Button::Listener */
@@ -166,7 +182,9 @@ void DeckGUI::filesDropped(const juce::StringArray& files, int x, int y)
     DBG("DeckGUI::filesDropped");
     if (files.size() == 1)
     {
-        loadURL(juce::URL(juce::File{ files[0] }));
+        juce::File file { files[0] };
+        juce::String fileName = file.getFileName();
+        loadURL(juce::URL(file), fileName);
     }
 }
 
@@ -184,5 +202,5 @@ void DeckGUI::loadURL(juce::URL audioURL, juce::String trackTitle)
     waveformDisplay.loadURL(audioURL);
 
     // set the track title in the header
-    header.setText(trackTitle);
+    header.setText(trackTitle, juce::NotificationType::dontSendNotification);
 }

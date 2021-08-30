@@ -5,7 +5,7 @@
 MainComponent::MainComponent()
 {
     // set size
-    setSize (800, 600);
+    setSize (1000, 800);
 
     // Some platforms require permissions to open input channels so request that here
     if (juce::RuntimePermissions::isRequired (juce::RuntimePermissions::recordAudio)
@@ -77,11 +77,12 @@ void MainComponent::paint (juce::Graphics& g)
 void MainComponent::resized()
 {
     // set bounds on deck GUI components
-    deckGUI1.setBounds(0, 0, getWidth()/2, getHeight() / 2);
-    deckGUI2.setBounds(getWidth() / 2, 0, getWidth() / 2, getHeight() / 2);
+    int deckHeight = getHeight() * 0.65;
+    deckGUI1.setBounds(0, 0, getWidth()/2, deckHeight);
+    deckGUI2.setBounds(getWidth() / 2, 0, getWidth() / 2, deckHeight);
 
     // set bounds on playlist component
-    playlistComponent.setBounds(0, getHeight() / 2, getWidth(), getHeight() / 2);
+    playlistComponent.setBounds(0, deckHeight, getWidth(), getHeight() - deckHeight);
 }
 
 

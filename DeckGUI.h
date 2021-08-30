@@ -53,24 +53,31 @@ private:
     // pointer to audio player
     DJAudioPlayer* player;
 
-    // child component container blocks
+    // header component to display track title
     juce::Label header;
-    juce::
 
-    // button components
-    juce::TextButton playButton{ "PLAY" };
-    juce::TextButton stopButton{ "STOP" };
-    juce::TextButton loadButton{ "LOAD" };
+    // start, stop, and play button block
+    juce::TextButton startStopControls;
+    juce::TextButton playButton{ "P" };
+    juce::TextButton pauseButton{ "PS" };
+    juce::TextButton stopButton{ "S" };
 
-    // slider components
+    // volume control component
     juce::Slider gainSlider;
-    juce::Slider speedSlider;
-    juce::Slider positionSlider;
+
+    // turntable display component
+    TurntableDisplay turntableDisplay{ player->getTransportSource() };
+
+    // frequency shelf manipulation sliders block
+    juce::GroupComponent frequencyControls;
     juce::Slider lowShelfGainSlider;
     juce::Slider highShelfGainSlider;
 
-    // custom turntable display component
-    TurntableDisplay turntableDisplay{ player->getTransportSource() };
+    // playback manipulation sliders block
+    juce::GroupComponent playbackControls;
+    juce::Slider speedSlider;
+    juce::Slider positionSlider;
+
     // waveform display component
     WaveformDisplay waveformDisplay;
 
