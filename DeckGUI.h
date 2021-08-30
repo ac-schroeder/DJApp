@@ -13,7 +13,7 @@
 #include <JuceHeader.h>
 #include "DJAudioPlayer.h"
 #include "WaveformDisplay.h"
-#include "PositionDisplay.h"
+#include "TurntableDisplay.h"
 
 //==============================================================================
 /*
@@ -47,11 +47,15 @@ public:
     void timerCallback() override;
 
     /** Loads an audio URL to the deck's player */
-    void loadURL(juce::URL audioURL);
+    void loadURL(juce::URL audioURL, juce::String trackTitle);
 
 private:
     // pointer to audio player
     DJAudioPlayer* player;
+
+    // child component container blocks
+    juce::Label header;
+    juce::
 
     // button components
     juce::TextButton playButton{ "PLAY" };
@@ -65,9 +69,8 @@ private:
     juce::Slider lowShelfGainSlider;
     juce::Slider highShelfGainSlider;
 
-    // custom position display component
-    PositionDisplay positionDisplay{ player->getTransportSource() };
-
+    // custom turntable display component
+    TurntableDisplay turntableDisplay{ player->getTransportSource() };
     // waveform display component
     WaveformDisplay waveformDisplay;
 

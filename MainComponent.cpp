@@ -5,7 +5,7 @@
 MainComponent::MainComponent()
 {
     // set size
-    setSize (1000, 700);
+    setSize (800, 600);
 
     // Some platforms require permissions to open input channels so request that here
     if (juce::RuntimePermissions::isRequired (juce::RuntimePermissions::recordAudio)

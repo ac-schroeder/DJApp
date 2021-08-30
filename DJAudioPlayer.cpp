@@ -123,7 +123,12 @@ void DJAudioPlayer::stop()
 
 double DJAudioPlayer::getPositionRelative()
 {
-    return transportSource.getCurrentPosition() / transportSource.getLengthInSeconds();
+    double position{};
+    if (transportSource.getLengthInSeconds() != 0)
+    {
+        position = transportSource.getCurrentPosition() / transportSource.getLengthInSeconds();
+    }
+    return position;
 }
 
 void DJAudioPlayer::setLowShelf(double gain)

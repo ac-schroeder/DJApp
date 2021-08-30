@@ -253,8 +253,7 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
             DBG("Pointer points to track with name " + track->fileName);
 
             // load the file to the correct deck
-            deckToUse->loadURL(track->audioURL);
-
+            deckToUse->loadURL(track->audioURL, track->fileName);
         }
         else // there was an error looking up the track
         {

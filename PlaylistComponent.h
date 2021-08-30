@@ -66,14 +66,13 @@ private:
     // the table component for the playlist track info and play buttons
     juce::TableListBox tableComponent;
     // the Add Track button to add files to the playlist
-    juce::TextButton addTrackButton{ "ADD TRACK" };
-    // the Search  button to search for tracks in the playlist
+    juce::TextButton addTrackButton{ "Add Track" };
+    // the Search button to search for tracks in the playlist
     juce::TextEditor searchBox;
     // a button to clear search results
     juce::TextButton clearSearchButton{ "Clear search" };
     // a message box to inform user of search results
     juce::Label playlistMessageBox;
-
 
     // the user's music library 
     MusicLibrary musicLibrary;

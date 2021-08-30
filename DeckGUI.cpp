@@ -20,6 +20,9 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
         formatManagerToUse,       // AudioFormatManager: to send to AudioThumbnail
         cacheToUse}               // AudioThumbnailCache: to send to AudioThumbnail
 {
+    // make visible the main component blocks
+    addAndMakeVisible(header);
+
     // make button components visible
     addAndMakeVisible(playButton);
     addAndMakeVisible(stopButton);
@@ -31,8 +34,8 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     //addAndMakeVisible(lowShelfGainSlider);
     //addAndMakeVisible(highShelfGainSlider);
 
-    // make position display visible
-    addAndMakeVisible(positionDisplay);
+    // make turntable display visible
+    addAndMakeVisible(turntableDisplay);
 
     // make waveform display visible
     addAndMakeVisible(waveformDisplay);
@@ -55,7 +58,7 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     lowShelfGainSlider.setRange(0.01, 1.0);
     highShelfGainSlider.setRange(0.01, 1.0);
 
-    // start the timer to coordinate audio playback and waveform display
+    // start the timer to coordinate audio playback and waveform and turntable displays
     startTimer(100);
 }
 
@@ -71,27 +74,29 @@ void DeckGUI::paint (juce::Graphics& g)
     g.setColour (juce::Colours::grey);
     g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
 
-    //g.setColour (juce::Colours::white);
-    //g.setFont (14.0f);
-    //g.drawText ("DeckGUI", getLocalBounds(),
-    //            juce::Justification::centred, true);   // draw some placeholder text
 }
 
 void DeckGUI::resized()
 {
-    double rowHeight = getHeight() / 9;
+    //double rowHeight = getHeight() / 10;
 
-    // set resizing bounds on components
-    playButton.setBounds(0, 0, getWidth(), rowHeight);
-    stopButton.setBounds(0, rowHeight, getWidth(), rowHeight);
-    positionDisplay.setBounds(0, rowHeight * 2, rowHeight * 4, rowHeight * 4);
-    //gainSlider.setBounds(0, rowHeight * 2, getWidth(), rowHeight);
-    //speedSlider.setBounds(0, rowHeight * 3, getWidth(), rowHeight);
-    positionSlider.setBounds(0, rowHeight * 6, getWidth(), rowHeight);
-    //lowShelfGainSlider.setBounds(0, rowHeight * 5, getWidth(), rowHeight);
-    //highShelfGainSlider.setBounds(0, rowHeight * 6, getWidth(), rowHeight);
+    //// set resizing bounds on components
+    //playButton.setBounds(0, 0, getWidth(), rowHeight);
+    //stopButton.setBounds(0, rowHeight, getWidth(), rowHeight);
+    //turntableDisplay.setBounds(0, rowHeight * 2, rowHeight * 5, rowHeight * 5);
+    ////gainSlider.setBounds(0, rowHeight * 2, getWidth(), rowHeight);
+    ////speedSlider.setBounds(0, rowHeight * 3, getWidth(), rowHeight);
+    //positionSlider.setBounds(0, rowHeight * 7, getWidth(), rowHeight);
+    ////lowShelfGainSlider.setBounds(0, rowHeight * 5, getWidth(), rowHeight);
+    ////highShelfGainSlider.setBounds(0, rowHeight * 6, getWidth(), rowHeight);
+    //
+    //waveformDisplay.setBounds(0, rowHeight * 8, getWidth(), rowHeight * 2);
+
+    auto area = getLocalBounds();
+
+    auto headerHeight = 36;
+    header.setBounds(area.removeFromTop(headerHeight));
     
-    waveformDisplay.setBounds(0, rowHeight * 7, getWidth(), rowHeight * 2);
 }
 
 /** Implement Button::Listener */
@@ -168,13 +173,16 @@ void DeckGUI::filesDropped(const juce::StringArray& files, int x, int y)
 void DeckGUI::timerCallback()
 {
     waveformDisplay.setPositionRelative(player->getPositionRelative());
-    positionDisplay.setPositionRelative(player->getPositionRelative());
+    turntableDisplay.setPositionRelative(player->getPositionRelative());
 }
 
 
 /** Loads an audio URL to the deck's player */
-void DeckGUI::loadURL(juce::URL audioURL)
+void DeckGUI::loadURL(juce::URL audioURL, juce::String trackTitle)
 {
     player->loadURL(audioURL);
     waveformDisplay.loadURL(audioURL);
+
+    // set the track title in the header
+    header.setText(trackTitle);
 }
