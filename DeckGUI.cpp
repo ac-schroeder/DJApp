@@ -20,8 +20,36 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
         formatManagerToUse,       // AudioFormatManager: to send to AudioThumbnail
         cacheToUse}               // AudioThumbnailCache: to send to AudioThumbnail
 {
+    // set look and feel
+    getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::orange);
+
+
     // set default text for track title
+    trackTitle.setColour(juce::Label::ColourIds::textColourId, juce::Colours::orange);
     trackTitle.setText("Load a track below to get started...", juce::NotificationType::dontSendNotification);
+
+    // load button images
+    juce::File playButtonImageFile = juce::File::getCurrentWorkingDirectory().getChildFile("play.png");
+    juce::File pauseButtonImageFile = juce::File::getCurrentWorkingDirectory().getChildFile("pause.png");
+    juce::File stopButtonImageFile = juce::File::getCurrentWorkingDirectory().getChildFile("stop.png");
+
+    juce::Image playButtonImage = juce::ImageFileFormat::loadFrom(playButtonImageFile);
+    juce::Image pauseButtonImage = juce::ImageFileFormat::loadFrom(pauseButtonImageFile);
+    juce::Image stopButtonImage = juce::ImageFileFormat::loadFrom(stopButtonImageFile);
+    juce::Image nullImage{};
+
+    playButton.setImages(true, true, true, 
+                         playButtonImage, 1, juce::Colours::transparentWhite, 
+                         nullImage, 0, juce::Colours::orange,
+                         nullImage, 0, juce::Colours::orange);
+    pauseButton.setImages(true, true, true,
+                         pauseButtonImage, 1, juce::Colours::transparentWhite,
+                         nullImage, 0, juce::Colours::orange,
+                         nullImage, 0, juce::Colours::orange);
+    stopButton.setImages(true, true, true,
+                         stopButtonImage, 1, juce::Colours::transparentWhite,
+                         nullImage, 0, juce::Colours::orange,
+                         nullImage, 0, juce::Colours::orange);
 
     // add components
     addAndMakeVisible(trackTitle);
@@ -73,6 +101,11 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     positionSlider.setRange(0.0, 100.0, 0.01);
     lowShelfGainSlider.setRange(0.01, 1.0);
     highShelfGainSlider.setRange(0.01, 1.0);
+
+    // set initial slider values
+    volumeSlider.setValue(1.0, juce::dontSendNotification);
+    speedSlider.setValue(1.0, juce::dontSendNotification);
+    positionSlider.setValue(0, juce::dontSendNotification);
 
     // start the timer to coordinate audio playback with waveform and turntable displays
     startTimer(100);

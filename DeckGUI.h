@@ -58,9 +58,10 @@ private:
 
     // start, stop, and play button block
     juce::GroupComponent startStopControls;
-    juce::TextButton playButton{ "P" };
-    juce::TextButton pauseButton{ "PS" };
-    juce::TextButton stopButton{ "S" };
+    //juce::TextButton playButton{ "P" };
+    juce::ImageButton playButton;
+    juce::ImageButton pauseButton;
+    juce::ImageButton stopButton;
 
     // volume slider component
     juce::GroupComponent volumeControls;
