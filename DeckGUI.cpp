@@ -20,42 +20,61 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
         formatManagerToUse,       // AudioFormatManager: to send to AudioThumbnail
         cacheToUse}               // AudioThumbnailCache: to send to AudioThumbnail
 {
-    // set up components
-    header.setText("Load a track below to get started...", juce::NotificationType::dontSendNotification);
+    // set default text for track title
+    trackTitle.setText("Load a track below to get started...", juce::NotificationType::dontSendNotification);
 
     // add components
-    addAndMakeVisible(header);
+    addAndMakeVisible(trackTitle);
     addAndMakeVisible(startStopControls);
     addAndMakeVisible(playButton);
     addAndMakeVisible(pauseButton);
     addAndMakeVisible(stopButton);
-    addAndMakeVisible(gainSlider);
+    addAndMakeVisible(volumeControls);
+    addAndMakeVisible(volumeSlider);
+    addAndMakeVisible(volumeSliderLabel);
     addAndMakeVisible(turntableDisplay);
     addAndMakeVisible(frequencyControls);
     addAndMakeVisible(lowShelfGainSlider);
     addAndMakeVisible(highShelfGainSlider);
     addAndMakeVisible(playbackControls);
     addAndMakeVisible(speedSlider);
+    addAndMakeVisible(speedSliderLabel);
     addAndMakeVisible(positionSlider);
+    addAndMakeVisible(positionSliderLabel);
     addAndMakeVisible(waveformDisplay);
 
     // add listeners
     playButton.addListener(this);
+    pauseButton.addListener(this);
     stopButton.addListener(this);
-    gainSlider.addListener(this);
+    volumeSlider.addListener(this);
     speedSlider.addListener(this);
     positionSlider.addListener(this);
     lowShelfGainSlider.addListener(this);
     highShelfGainSlider.addListener(this);
-    
+
+    // attach slider labels
+    volumeSliderLabel.setText("Volume", juce::dontSendNotification);
+    volumeSliderLabel.attachToComponent(&volumeSlider, true);
+    speedSliderLabel.setText("Speed", juce::dontSendNotification);
+    speedSliderLabel.attachToComponent(&speedSlider, true);
+    positionSliderLabel.setText("Position", juce::dontSendNotification);
+    positionSliderLabel.attachToComponent(&positionSlider, true);
+
+    // format slider text boxes
+    speedSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 
+                                50, speedSlider.getTextBoxHeight());
+    positionSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 
+                                50, positionSlider.getTextBoxHeight());
+        
     // restrict slider ranges
-    gainSlider.setRange(0.0, 1.0);
-    speedSlider.setRange(0.0, 100.0);
-    positionSlider.setRange(0.0, 1.0);
+    volumeSlider.setRange(0.0, 1.0);
+    speedSlider.setRange(0.0, 2.0, 0.01);
+    positionSlider.setRange(0.0, 100.0, 0.01);
     lowShelfGainSlider.setRange(0.01, 1.0);
     highShelfGainSlider.setRange(0.01, 1.0);
 
-    // start the timer to coordinate audio playback and waveform and turntable displays
+    // start the timer to coordinate audio playback with waveform and turntable displays
     startTimer(100);
 }
 
@@ -80,13 +99,13 @@ void DeckGUI::resized()
     /*==== Block Section Bounds ====*/
 
     // header section
-    header.setBounds(area.removeFromTop(36));
+    trackTitle.setBounds(area.removeFromTop(36));
 
     // waveform display section
     waveformDisplay.setBounds(area.removeFromBottom(area.getHeight() / 5));
 
     // playback controls section
-    auto playbackControlsArea = area.removeFromBottom(area.getHeight() / 5);
+    auto playbackControlsArea = area.removeFromBottom(area.getHeight() / 4);
     playbackControls.setBounds(playbackControlsArea);
 
     // frequency controls section
@@ -94,11 +113,12 @@ void DeckGUI::resized()
     frequencyControls.setBounds(frequencyControlsArea);
 
     // start-stop controls section
-    auto startStopControlsArea = area.removeFromTop(area.getHeight() * 0.23);
+    auto startStopControlsArea = area.removeFromTop(area.getHeight() * 0.2);
     startStopControls.setBounds(startStopControlsArea);
 
     // volume slider
-    gainSlider.setBounds(area.removeFromTop(area.getHeight() / 4));
+    auto volumeControlsArea = area.removeFromTop(area.getHeight() / 6);
+    volumeControls.setBounds(volumeControlsArea);
 
     // turntable display - set to be square and centered horizontally
     auto turntableDimension = juce::jmin(area.getHeight(), area.getWidth());
@@ -108,11 +128,33 @@ void DeckGUI::resized()
     /*=== Section Subcomponent Bounds ===*/
 
     // start-stop buttons
-    auto buttonHeight = 40;
-    auto buttonWidth = 40;
-    playButton.setBounds(startStopControlsArea.removeFromLeft(buttonWidth).reduced(20));
-    pauseButton.setBounds(startStopControlsArea.removeFromLeft(buttonWidth).reduced(20));
-    stopButton.setBounds(startStopControlsArea.removeFromLeft(buttonWidth).reduced(20));
+    auto startStopButtonWidth = startStopControlsArea.getWidth() / 3;
+    auto startStopButtonMargin = 10;
+    playButton.setBounds(startStopControlsArea.removeFromLeft(startStopButtonWidth).reduced(startStopButtonMargin));
+    pauseButton.setBounds(startStopControlsArea.removeFromLeft(startStopButtonWidth).reduced(startStopButtonMargin));
+    stopButton.setBounds(startStopControlsArea.removeFromLeft(startStopButtonWidth).reduced(startStopButtonMargin));
+
+    // volume controls
+    auto volumeLabelWidth = 60;
+    volumeSliderLabel.setBounds(volumeControlsArea.removeFromLeft(volumeLabelWidth));
+    volumeSlider.setBounds(volumeControlsArea);
+
+    // playback control sliders
+    auto playbackSliderHeight = playbackControlsArea.getHeight() / 2;
+    auto playbackLabelWidth = 50;
+    auto playbackSliderMargin = 15;
+
+    auto speedSliderArea = playbackControlsArea.removeFromTop(playbackSliderHeight);
+    auto positionSliderArea = playbackControlsArea.removeFromTop(playbackSliderHeight);
+
+    positionSliderLabel.setBounds(positionSliderArea.removeFromLeft(playbackLabelWidth));
+    speedSliderLabel.setBounds(speedSliderArea.removeFromLeft(playbackLabelWidth));
+
+    positionSlider.setBounds(positionSliderArea.reduced(playbackSliderMargin));
+    speedSlider.setBounds(speedSliderArea.reduced(playbackSliderMargin));
+
+    // frequency control sliders
+
 }
 
 /** Implement Button::Listener */
@@ -125,10 +167,16 @@ void DeckGUI::buttonClicked(juce::Button* button)
         // begin playing
         player->start();
     }
+    if (button == &pauseButton)
+    {
+        DBG("DeckGUI::buttonClicked: Pause Button was clicked");
+        // pause playing
+        player->pause();
+    }
     if (button == &stopButton)
     {
         DBG("DeckGUI::buttonClicked: Stop Button was clicked");
-        // stop playing
+        // pause playing
         player->stop();
     }
 }
@@ -136,10 +184,10 @@ void DeckGUI::buttonClicked(juce::Button* button)
 /** Implement Slider::Listener */
 void DeckGUI::sliderValueChanged(juce::Slider* slider)
 {
-    // implement gain slider
-    if (slider == &gainSlider)
+    // implement volume slider
+    if (slider == &volumeSlider)
     {
-        DBG("DeckGUI::sliderValueChanged: gainSlider " + std::to_string(slider->getValue()));
+        DBG("DeckGUI::sliderValueChanged: volumeSlider " + std::to_string(slider->getValue()));
         player->setGain(slider->getValue());
     }
     // implement speed effects
@@ -158,12 +206,12 @@ void DeckGUI::sliderValueChanged(juce::Slider* slider)
         DBG("DeckGUI::sliderValueChanged: positionSlider " + std::to_string(slider->getValue()));
         player->setPositionRelative(slider->getValue());
     }
-    // implement low shelf gain slider
+    // implement low shelf volume slider
     if (slider == &lowShelfGainSlider)
     {
         player->setLowShelf(slider->getValue());
     }
-    // implement high shelf gain slider
+    // implement high shelf volume slider
     if (slider == &highShelfGainSlider)
     {
         player->setHighShelf(slider->getValue());
@@ -196,11 +244,11 @@ void DeckGUI::timerCallback()
 
 
 /** Loads an audio URL to the deck's player */
-void DeckGUI::loadURL(juce::URL audioURL, juce::String trackTitle)
+void DeckGUI::loadURL(juce::URL audioURL, juce::String fileName)
 {
     player->loadURL(audioURL);
     waveformDisplay.loadURL(audioURL);
 
     // set the track title in the header
-    header.setText(trackTitle, juce::NotificationType::dontSendNotification);
+    trackTitle.setText(fileName, juce::dontSendNotification);
 }

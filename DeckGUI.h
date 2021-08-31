@@ -47,23 +47,26 @@ public:
     void timerCallback() override;
 
     /** Loads an audio URL to the deck's player */
-    void loadURL(juce::URL audioURL, juce::String trackTitle);
+    void loadURL(juce::URL audioURL, juce::String fileName);
 
 private:
     // pointer to audio player
     DJAudioPlayer* player;
 
     // header component to display track title
-    juce::Label header;
+    juce::Label trackTitle;
 
     // start, stop, and play button block
-    juce::TextButton startStopControls;
+    juce::GroupComponent startStopControls;
     juce::TextButton playButton{ "P" };
     juce::TextButton pauseButton{ "PS" };
     juce::TextButton stopButton{ "S" };
 
-    // volume control component
-    juce::Slider gainSlider;
+    // volume slider component
+    juce::GroupComponent volumeControls;
+    juce::Slider volumeSlider{ juce::Slider::SliderStyle::LinearHorizontal,
+                               juce::Slider::TextEntryBoxPosition::NoTextBox };
+    juce::Label volumeSliderLabel;
 
     // turntable display component
     TurntableDisplay turntableDisplay{ player->getTransportSource() };
@@ -76,7 +79,9 @@ private:
     // playback manipulation sliders block
     juce::GroupComponent playbackControls;
     juce::Slider speedSlider;
+    juce::Label speedSliderLabel;
     juce::Slider positionSlider;
+    juce::Label positionSliderLabel;
 
     // waveform display component
     WaveformDisplay waveformDisplay;

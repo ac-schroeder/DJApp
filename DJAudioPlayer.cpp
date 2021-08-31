@@ -83,7 +83,7 @@ void DJAudioPlayer::setGain(double gain)
 
 void DJAudioPlayer::setSpeed(double ratio)
 {
-    if (ratio < 0 || ratio > 100.0)
+    if (ratio < 0 || ratio > 2.0)
     {
         DBG("DJAudioPlayer::setSpeed: ratio should be between 0 and  100");
     }
@@ -100,13 +100,13 @@ void DJAudioPlayer::setPosition(double posInSecs)
 
 void DJAudioPlayer::setPositionRelative(double pos)
 {
-    if (pos < 0 || pos > 1.0)
+    if (pos < 0 || pos > 100.0)
     {
-        DBG("DJAudioPlayer::setPositionRelative: position should be between 0 and  1");
+        DBG("DJAudioPlayer::setPositionRelative: position should be between 0 and  100");
     }
     else
     {
-        double posInSecs = transportSource.getLengthInSeconds() * pos;
+        double posInSecs = transportSource.getLengthInSeconds() * (pos / 100);
         setPosition(posInSecs);
     }
 }
@@ -116,9 +116,15 @@ void DJAudioPlayer::start()
     transportSource.start();
 }
 
+void DJAudioPlayer::pause()
+{
+    transportSource.stop();
+}
+
 void DJAudioPlayer::stop()
 {
     transportSource.stop();
+    transportSource.setNextReadPosition(0);
 }
 
 double DJAudioPlayer::getPositionRelative()

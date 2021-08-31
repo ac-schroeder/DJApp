@@ -34,6 +34,7 @@ public:
     void setHighShelf(double gain);
 
     void start();
+    void pause();
     void stop();
 
     /** get the relative position of the playhead */
