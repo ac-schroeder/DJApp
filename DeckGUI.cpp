@@ -21,8 +21,8 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
         cacheToUse}               // AudioThumbnailCache: to send to AudioThumbnail
 {
     // set look and feel
-    getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::orange);
-
+    setLookAndFeel(&mainLookAndFeel);
+    //getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::orange);
 
     // set default text for track title
     trackTitle.setColour(juce::Label::ColourIds::textColourId, juce::Colours::orange);
@@ -109,6 +109,7 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
 DeckGUI::~DeckGUI()
 {
     stopTimer();
+    setLookAndFeel(nullptr);
 }
 
 void DeckGUI::paint (juce::Graphics& g)
@@ -168,7 +169,7 @@ void DeckGUI::resized()
     volumeSlider.setBounds(volumeControlsArea);
 
     // frequency control sliders
-    frequencyShelfFilter.setBounds(frequencyControlsArea.reduced(10));
+    frequencyShelfFilter.setBounds(frequencyControlsArea.reduced(5));
 
     // playback control sliders
     auto playbackSliderHeight = playbackControlsArea.getHeight() / 2;

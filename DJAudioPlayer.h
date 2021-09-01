@@ -30,8 +30,8 @@ public:
     void setSpeed(double ratio);
     void setPosition(double posInSecs);
     void setPositionRelative(double pos);
-    void setLowShelf(double gain);
-    void setHighShelf(double gain);
+    void setLowShelf(double frequency, float gain, double q);
+    void setHighShelf(double frequency, float gain, double q);
 
     void start();
     void pause();

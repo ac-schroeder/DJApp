@@ -37,23 +37,17 @@ private:
     juce::Label highFrequencyLabel;
     juce::Label highGainLabel;
     juce::Label highQLabel;
-    juce::Slider highFrequencySlider{ juce::Slider::LinearVertical, 
-                              juce::Slider::TextBoxAbove };
-    juce::Slider highGainSlider{ juce::Slider::LinearVertical,
-                              juce::Slider::TextBoxAbove };
-    juce::Slider highQSlider{ juce::Slider::LinearVertical,
-                              juce::Slider::TextBoxAbove };
+    juce::Slider highFrequencySlider{ juce::Slider::LinearVertical, juce::Slider::TextBoxAbove };
+    juce::Slider highGainSlider{ juce::Slider::LinearVertical, juce::Slider::TextBoxAbove };
+    juce::Slider highQSlider{ juce::Slider::LinearVertical, juce::Slider::TextBoxAbove };
     // low shelf filter sliders
     juce::GroupComponent lowShelfSliders;
     juce::Label lowFrequencyLabel;
     juce::Label lowGainLabel;
     juce::Label lowQLabel;
-    juce::Slider lowFrequencySlider{ juce::Slider::LinearVertical,
-                             juce::Slider::TextBoxAbove };
-    juce::Slider lowGainSlider{ juce::Slider::LinearVertical,
-                             juce::Slider::TextBoxAbove };
-    juce::Slider lowQSlider{ juce::Slider::LinearVertical,
-                             juce::Slider::TextBoxAbove };
+    juce::Slider lowFrequencySlider{ juce::Slider::LinearVertical, juce::Slider::TextBoxAbove };
+    juce::Slider lowGainSlider{ juce::Slider::LinearVertical, juce::Slider::TextBoxAbove };
+    juce::Slider lowQSlider{ juce::Slider::LinearVertical, juce::Slider::TextBoxAbove };
 
     // pointer to the player
     DJAudioPlayer* player;

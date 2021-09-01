@@ -14,12 +14,8 @@
 
 //==============================================================================
 // TODO: Take this param for the change listerner out! Unless... ?
-TurntableDisplay::TurntableDisplay(juce::AudioTransportSource* _transportSource)
-    : transportSource{ _transportSource }
+TurntableDisplay::TurntableDisplay()
 {
-    // register change listener
-    // TODO: Take this out! Unless... ?
-    transportSource->addChangeListener(this);
 }
 
 TurntableDisplay::~TurntableDisplay()
@@ -126,12 +122,4 @@ void TurntableDisplay::updateNeedlePosition()
     float elbowAngle = needleAngle - (11 * (juce::MathConstants<float>::pi / 180));
     toneArmNeedle = toneArmBase.getPointOnCircumference(toneArmDistance, needleAngle);
     toneArmElbow = toneArmBase.getPointOnCircumference(toneArmDistance * 0.63, elbowAngle);
-}
-
-/** Implement ChangeListener: Detect broadcasts from the audioSource in order to update the waveform display */
-// TODO: Take this out! Unless... ?
-void TurntableDisplay::changeListenerCallback(juce::ChangeBroadcaster* source)
-{
-    DBG("TurntableDisplay: Change received");
-    repaint();
 }

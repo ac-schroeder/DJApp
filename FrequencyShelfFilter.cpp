@@ -34,6 +34,32 @@ FrequencyShelfFilter::FrequencyShelfFilter(DJAudioPlayer* _player)
     addAndMakeVisible(lowQLabel);               // Q slider label
     addAndMakeVisible(lowQSlider);              // Q slider
 
+    // set slider names
+    highFrequencySlider.setName("highShelf");
+    highGainSlider.setName("highShelf");
+    highQSlider.setName("highShelf");
+    lowFrequencySlider.setName("lowShelf");
+    lowGainSlider.setName("lowShelf");
+    lowQSlider.setName("lowShelf");
+
+    // set high shelf slider ranges
+    highFrequencySlider.setRange(10000, 20000, 10);
+    highGainSlider.setRange(0.01f, 1.00f, 0.01f);   // can only attenuate - set max to 2.0 for boost
+    highQSlider.setRange(0.1, 40.0, 0.1);
+    // set low shelf slider ranges
+    lowFrequencySlider.setRange(1, 250, 1);
+    lowGainSlider.setRange(0.01f, 1.0f, 0.01f);    // can only attenuate - set max to 2.0 for boost
+    lowQSlider.setRange(0.1, 40, 0.1);
+
+    // set high shelf slider starting values
+    highFrequencySlider.setValue(15000);
+    highGainSlider.setValue(1.0);
+    highQSlider.setValue(1);
+    // set low shelf slider starting values
+    lowFrequencySlider.setValue(20);
+    lowGainSlider.setValue(1.0);
+    lowQSlider.setValue(1.0);
+
     // attach high shelf labels
     highShelfLabel.attachToComponent(&highShelfSliders, true);
     highFrequencyLabel.attachToComponent(&highFrequencySlider, false);
@@ -56,24 +82,6 @@ FrequencyShelfFilter::FrequencyShelfFilter(DJAudioPlayer* _player)
     lowGainLabel.setText("Gain", juce::dontSendNotification);
     lowQLabel.setText("Q", juce::dontSendNotification);
     
-    // set high shelf slider ranges
-    highFrequencySlider.setRange(10000, 20000, 10);
-    highGainSlider.setRange(0.01, 1.00, 0.01);   // can only attenuate - set max to 2.0 for boost
-    highQSlider.setRange(0.1, 40.0, 0.1);
-    // set low shelf slider ranges
-    lowFrequencySlider.setRange(1, 250, 1);
-    lowGainSlider.setRange(0.01, 1.0, 0.01);    // can only attenuate - set max to 2.0 for boost
-    lowQSlider.setRange(0.1, 40, 0.1);
-
-    // set high shelf slider starting values
-    highFrequencySlider.setValue(15000);
-    highGainSlider.setValue(1.0);
-    highQSlider.setValue(1);
-    // set low shelf slider starting values
-    lowFrequencySlider.setValue(20);
-    lowGainSlider.setValue(1.0);
-    lowQSlider.setValue(1.0);
-
     // add high shelf slider listeners
     highFrequencySlider.addListener(this);
     highGainSlider.addListener(this);
@@ -126,14 +134,22 @@ void FrequencyShelfFilter::resized()
 
 void FrequencyShelfFilter::sliderValueChanged(juce::Slider* slider)
 {
-    // implement low shelf volume slider
-    //if (slider == &highFrequencySlider)
-    //{
-    //    player->setHighShelf(slider->getValue());
-    //}
-    //// implement high shelf volume slider
-    //if (slider == &lowFrequencySlider)
-    //{
-    //    player->setLowShelf(slider->getValue());
-    //}
+    double frequency{};
+    float gain{};
+    double q{};
+    if (slider->getName() == "highShelf")
+    {
+        frequency = highFrequencySlider.getValue();
+        gain = highGainSlider.getValue();
+        q = highQSlider.getValue();
+        player->setHighShelf(frequency, gain, q);
+    }
+    if (slider->getName() == "lowShelf")
+    {
+        frequency = lowFrequencySlider.getValue();
+        gain = lowGainSlider.getValue();
+        q = lowQSlider.getValue();
+        player->setLowShelf(frequency, gain, q);
+
+    }
 }

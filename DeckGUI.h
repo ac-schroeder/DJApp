@@ -11,6 +11,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "MainLookAndFeel.h"
 #include "DJAudioPlayer.h"
 #include "WaveformDisplay.h"
 #include "FrequencyShelfFilter.h"
@@ -51,6 +52,9 @@ public:
     void loadURL(juce::URL audioURL, juce::String fileName);
 
 private:
+    // custom look and feel 
+    MainLookAndFeel mainLookAndFeel;
+
     // pointer to audio player
     DJAudioPlayer* player;
 
@@ -70,13 +74,11 @@ private:
     juce::Label volumeSliderLabel;
 
     // turntable display component
-    TurntableDisplay turntableDisplay{ player->getTransportSource() };
+    TurntableDisplay turntableDisplay;
 
     // frequency shelf manipulation sliders block
     juce::GroupComponent frequencyControls;
     FrequencyShelfFilter frequencyShelfFilter{ player };
-    //juce::Slider lowShelfGainSlider;
-    //juce::Slider highShelfGainSlider;
 
     // playback manipulation sliders block
     juce::GroupComponent playbackControls;

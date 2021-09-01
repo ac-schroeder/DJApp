@@ -137,15 +137,15 @@ double DJAudioPlayer::getPositionRelative()
     return position;
 }
 
-void DJAudioPlayer::setLowShelf(double gain)
+void DJAudioPlayer::setLowShelf(double frequency, float gain, double q)
 {
-    lowShelfCoefficients = juce::IIRCoefficients::makeLowShelf(sampleRate, 400, 1, gain);
+    lowShelfCoefficients = juce::IIRCoefficients::makeLowShelf(sampleRate, frequency, q, gain);
     lowShelfFilteredSource.setCoefficients(lowShelfCoefficients);
 }
 
-void DJAudioPlayer::setHighShelf(double gain)
+void DJAudioPlayer::setHighShelf(double frequency, float gain, double q)
 {
-    highShelfCoefficients = juce::IIRCoefficients::makeHighShelf(sampleRate, 4000, 1, gain);
+    highShelfCoefficients = juce::IIRCoefficients::makeHighShelf(sampleRate, frequency, q, gain);
     highShelfFilteredSource.setCoefficients(highShelfCoefficients);
 }
 

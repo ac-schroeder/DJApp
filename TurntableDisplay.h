@@ -16,12 +16,10 @@
 //==============================================================================
 /*
 */
-class TurntableDisplay  : public juce::Component,
-                          public juce::ChangeListener // TODO: Take this out! Unless... ?
+class TurntableDisplay  : public juce::Component
 {
 public:
-    // TODO: Take param for the change listener out! Unless... ?
-    TurntableDisplay(juce::AudioTransportSource* _transportSource);
+    TurntableDisplay();
     ~TurntableDisplay() override;
 
     void paint (juce::Graphics&) override;
@@ -30,15 +28,7 @@ public:
     void setPositionRelative(double _position);
     void updateNeedlePosition();
 
-    /** Implement ChangeListener: Detect broadcasts from the audioSource in order to update the waveform display */
-    // TODO: Take this out! Unless... ?
-    void changeListenerCallback(juce::ChangeBroadcaster* source) override;
-
 private:
-    // pointer to the transport source of the player for listening to changes in playback
-    // TODO: Take this out! Unless... ?
-    juce::AudioTransportSource* transportSource;
-
     // the relative position of the playhead
     double position{0};
 
