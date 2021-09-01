@@ -13,6 +13,7 @@
 #include <JuceHeader.h>
 #include "DJAudioPlayer.h"
 #include "WaveformDisplay.h"
+#include "FrequencyShelfFilter.h"
 #include "TurntableDisplay.h"
 
 //==============================================================================
@@ -58,7 +59,6 @@ private:
 
     // start, stop, and play button block
     juce::GroupComponent startStopControls;
-    //juce::TextButton playButton{ "P" };
     juce::ImageButton playButton;
     juce::ImageButton pauseButton;
     juce::ImageButton stopButton;
@@ -74,8 +74,9 @@ private:
 
     // frequency shelf manipulation sliders block
     juce::GroupComponent frequencyControls;
-    juce::Slider lowShelfGainSlider;
-    juce::Slider highShelfGainSlider;
+    FrequencyShelfFilter frequencyShelfFilter{ player };
+    //juce::Slider lowShelfGainSlider;
+    //juce::Slider highShelfGainSlider;
 
     // playback manipulation sliders block
     juce::GroupComponent playbackControls;

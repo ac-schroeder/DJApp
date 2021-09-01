@@ -62,8 +62,7 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     addAndMakeVisible(volumeSliderLabel);
     addAndMakeVisible(turntableDisplay);
     addAndMakeVisible(frequencyControls);
-    addAndMakeVisible(lowShelfGainSlider);
-    addAndMakeVisible(highShelfGainSlider);
+    addAndMakeVisible(frequencyShelfFilter);
     addAndMakeVisible(playbackControls);
     addAndMakeVisible(speedSlider);
     addAndMakeVisible(speedSliderLabel);
@@ -78,8 +77,6 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     volumeSlider.addListener(this);
     speedSlider.addListener(this);
     positionSlider.addListener(this);
-    lowShelfGainSlider.addListener(this);
-    highShelfGainSlider.addListener(this);
 
     // attach slider labels
     volumeSliderLabel.setText("Volume", juce::dontSendNotification);
@@ -99,8 +96,6 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     volumeSlider.setRange(0.0, 1.0);
     speedSlider.setRange(0.0, 2.0, 0.01);
     positionSlider.setRange(0.0, 100.0, 0.01);
-    lowShelfGainSlider.setRange(0.01, 1.0);
-    highShelfGainSlider.setRange(0.01, 1.0);
 
     // set initial slider values
     volumeSlider.setValue(1.0, juce::dontSendNotification);
@@ -172,6 +167,9 @@ void DeckGUI::resized()
     volumeSliderLabel.setBounds(volumeControlsArea.removeFromLeft(volumeLabelWidth));
     volumeSlider.setBounds(volumeControlsArea);
 
+    // frequency control sliders
+    frequencyShelfFilter.setBounds(frequencyControlsArea.reduced(10));
+
     // playback control sliders
     auto playbackSliderHeight = playbackControlsArea.getHeight() / 2;
     auto playbackLabelWidth = 50;
@@ -185,9 +183,6 @@ void DeckGUI::resized()
 
     positionSlider.setBounds(positionSliderArea.reduced(playbackSliderMargin));
     speedSlider.setBounds(speedSliderArea.reduced(playbackSliderMargin));
-
-    // frequency control sliders
-
 }
 
 /** Implement Button::Listener */
@@ -240,15 +235,15 @@ void DeckGUI::sliderValueChanged(juce::Slider* slider)
         player->setPositionRelative(slider->getValue());
     }
     // implement low shelf volume slider
-    if (slider == &lowShelfGainSlider)
-    {
-        player->setLowShelf(slider->getValue());
-    }
-    // implement high shelf volume slider
-    if (slider == &highShelfGainSlider)
-    {
-        player->setHighShelf(slider->getValue());
-    }
+    //if (slider == &lowShelfGainSlider)
+    //{
+    //    player->setLowShelf(slider->getValue());
+    //}
+    //// implement high shelf volume slider
+    //if (slider == &highShelfGainSlider)
+    //{
+    //    player->setHighShelf(slider->getValue());
+    //}
 }
 
 /** Implement FileDragAndDrop */
