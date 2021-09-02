@@ -26,6 +26,8 @@ public:
     MusicTrack* getTrack(juce::String keyword);
     /** Adds a track to the music library */
     void addTrack(juce::URL audioURL);
+    /** Removes a track from the music library */
+    void removeTrack(juce::String fileName);
 
 private:
     // the music library

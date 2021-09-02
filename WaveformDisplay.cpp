@@ -66,7 +66,6 @@ void WaveformDisplay::resized()
 /** Implement ChangeListener */
 void WaveformDisplay::changeListenerCallback(juce::ChangeBroadcaster* source)
 {
-    DBG("WaveformDisplay: Change received");
     repaint();
 }
 

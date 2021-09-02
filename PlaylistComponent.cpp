@@ -30,6 +30,7 @@ PlaylistComponent::PlaylistComponent(juce::AudioFormatManager& _formatManager,
     tableComponent.getHeader().addColumn("Track Length", 2, 200);
     tableComponent.getHeader().addColumn("", 3, 100);
     tableComponent.getHeader().addColumn("", 4, 100);
+    tableComponent.getHeader().addColumn("", 5, 100);
 
     // make components visible
     addAndMakeVisible(addTrackButton);
@@ -47,10 +48,6 @@ PlaylistComponent::PlaylistComponent(juce::AudioFormatManager& _formatManager,
     // set playlist message box properties
     playlistMessageBox.setText("Displaying all tracks in your library.",
                                 juce::NotificationType::dontSendNotification);
-    // TODO: get this stuff into LookandFeel?
-    // TODO: how do you make a border?!?!?
-    //juce::BorderSize<int> border{ 12 };
-    //searchResultsMessageBox.setBorderSize(border);
 
     // add listeners
     addTrackButton.addListener(this);
@@ -80,7 +77,6 @@ void PlaylistComponent::resized()
     double addTrackButtonWidth = getWidth() / 3;
     double searchBoxWidth = getWidth() / 3;
     double clearSearchButtonWidth = getWidth() / 3;
-
 
     addTrackButton.setBounds(0, 0, 
                         addTrackButtonWidth, topBarHeight);
@@ -134,6 +130,7 @@ void PlaylistComponent::paintCell(juce::Graphics& g,
             juce::Justification::centredLeft,
             true);
     }
+    // draw the track lengths down the second column
     if (columnId == 2)
     {
         // draw the track length
@@ -190,6 +187,22 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
             existingComponentToUpdate = rightDeckButton;
         }
     }
+    if (columnId == 5)
+    {
+        // check that a custom component does not already exist
+        if (existingComponentToUpdate == nullptr)
+        {
+            // create a button to remove the track
+            juce::TextButton* removeTrackButton = new juce::TextButton{ "Remove Track" };
+            juce::String id{ shownTracks[rowNumber].fileName };
+            removeTrackButton->setComponentID(id);
+
+            // assign it the button listener
+            removeTrackButton->addListener(this);
+
+            existingComponentToUpdate = removeTrackButton;
+        }
+    }
     // return the custom component, or nullptr if the second column
     return existingComponentToUpdate;
 }
@@ -225,7 +238,22 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
         // clear the search and re-display whole library
         clearSearch();
     }
-    // deck loading buttons in the table rows
+    // track removal buttons in the tableComponent
+    else if (button->getButtonText() == "Remove Track")
+    {
+        DBG("I'm a track removal button!");
+
+        // get the track number from the component id on the button
+        juce::String fileName = button->getComponentID();
+        musicLibrary.removeTrack(fileName);
+
+        // refresh the table
+        shownTracks.clear();
+        shownTracks = musicLibrary.getTracks();
+        tableComponent.updateContent();
+
+    }
+    // deck loading buttons in the tableComponent
     else
     {
         // get the track number from the component id on the button
@@ -242,10 +270,6 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
             deckToUse = rightDeck;
         }
 
-        DBG("Button clicked! Button Component ID: " + fileName);
-        DBG("Button clicked! Track File Name: " + fileName);
-        DBG("Button clicked! Deck to use is " + button->getButtonText());
-       
         // get the relevant track from the music library to load
         MusicTrack* track { musicLibrary.getTrack(fileName) };
         if (track != nullptr) // track was found

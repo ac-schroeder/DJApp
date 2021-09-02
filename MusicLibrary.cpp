@@ -8,6 +8,7 @@
   ==============================================================================
 */
 
+#include <algorithm>
 #include "MusicLibrary.h"
 
 MusicLibrary::MusicLibrary(juce::AudioFormatManager& _formatManager)
@@ -66,6 +67,23 @@ void MusicLibrary::addTrack(juce::URL audioURL)
     // create a new track object and add to the libraryTracks list
     MusicTrack track{ fileName, audioURL, length };
     libraryTracks.push_back(track);
+}
+
+// Remove a track from the music library
+// technique from https://stackoverflow.com/questions/8628951/remove-elements-of-a-vector-inside-the-loop
+void MusicLibrary::removeTrack(juce::String fileName)
+{
+    if (!libraryTracks.empty())
+    {
+        for (int i = libraryTracks.size() - 1; i >= 0; i--)
+        {
+            if (libraryTracks.at(i).fileName == fileName)
+            {
+                libraryTracks.erase(libraryTracks.begin() + i);
+                break;
+            }
+        }
+    }
 }
 
 void MusicLibrary::saveLibrary()
