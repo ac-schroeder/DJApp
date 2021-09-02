@@ -19,75 +19,94 @@ PlaylistComponent::PlaylistComponent(juce::AudioFormatManager& _formatManager,
       leftDeck { _leftDeck },
       rightDeck { _rightDeck }
 {
-    // set the table component's data model
-    tableComponent.setModel(this);
+    // set look and feel
+    setLookAndFeel(&mainLookAndFeel);
 
-    // populate the shownTracks with the Music Library tracks
+    // get playlist from the music library
     shownTracks = musicLibrary.getTracks();
 
+    // set the table component's data model
+    tableComponent.setModel(this);
     // create headers for the table
     tableComponent.getHeader().addColumn("File Name", 1, 400);
-    tableComponent.getHeader().addColumn("Track Length", 2, 200);
-    tableComponent.getHeader().addColumn("", 3, 100);
-    tableComponent.getHeader().addColumn("", 4, 100);
+    tableComponent.getHeader().addColumn("Track Length", 2, 180);
+    tableComponent.getHeader().addColumn("", 3, 160);
+    tableComponent.getHeader().addColumn("", 4, 160);
     tableComponent.getHeader().addColumn("", 5, 100);
 
     // make components visible
     addAndMakeVisible(addTrackButton);
+    addAndMakeVisible(clearPlaylistButton);
+    addAndMakeVisible(searchBoxLabel);
     addAndMakeVisible(searchBox);
+    addAndMakeVisible(clearSearchButton);
     addAndMakeVisible(playlistMessageBox);
     addAndMakeVisible(tableComponent);
 
-    // add clear search button, but do not make visible yet
-    addChildComponent(clearSearchButton);
-
     // set search box properties
-    searchBox.setJustification(juce::Justification::centred);
-    searchBox.setTextToShowWhenEmpty("SEARCH TRACKS...", juce::Colours::white);
+    searchBoxLabel.attachToComponent(&searchBox, true);
+    searchBoxLabel.setFont(juce::Font{ 16.0f });
+    searchBoxLabel.setText("Search", juce::dontSendNotification);
+    searchBox.setJustification(juce::Justification::centredLeft);
+    searchBox.setTextToShowWhenEmpty("Search tracks...", juce::Colours::lightgrey);
+    // searchBox.setIndents(5,5);
 
     // set playlist message box properties
     playlistMessageBox.setText("Displaying all tracks in your library.",
-                                juce::NotificationType::dontSendNotification);
+                                juce::dontSendNotification);
+    //playlistMessageBox.setFont(juce::Font{ 13.0f });
 
     // add listeners
     addTrackButton.addListener(this);
+    clearPlaylistButton.addListener(this);
     searchBox.addListener(this);
     clearSearchButton.addListener(this);
-
 }
 
 PlaylistComponent::~PlaylistComponent()
 {
+    setLookAndFeel(nullptr);
 }
 
 void PlaylistComponent::paint (juce::Graphics& g)
 {
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
+    // clear the background
+    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   
 
+    // draw an outline around the component
     g.setColour (juce::Colours::grey);
-    g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
+    g.drawRect (getLocalBounds(), 1);   
 
+    // set text style
     g.setColour (juce::Colours::white);
     g.setFont (14.0f);
 }
 
 void PlaylistComponent::resized()
 {
-    double topBarHeight = getHeight() / 10;
-    double addTrackButtonWidth = getWidth() / 3;
-    double searchBoxWidth = getWidth() / 3;
-    double clearSearchButtonWidth = getWidth() / 3;
+    auto area = getLocalBounds();
 
-    addTrackButton.setBounds(0, 0, 
-                        addTrackButtonWidth, topBarHeight);
-    searchBox.setBounds(getWidth() - searchBoxWidth, 0, 
-                        searchBoxWidth, topBarHeight);
-    playlistMessageBox.setBounds(0, topBarHeight,
-                        getWidth() - 80, topBarHeight);
-    clearSearchButton.setBounds(getWidth() - clearSearchButtonWidth, topBarHeight, 
-                        clearSearchButtonWidth, topBarHeight);
-    tableComponent.setBounds(0, topBarHeight * 2, 
-                        getWidth(), getHeight() - (topBarHeight*2));
+    // dimensions
+    double topBarHeight = area.getHeight() / 9;
+    double leftButtonWidth = area.getWidth() / 5;
+    double searchBoxWidth = area.getWidth() / 5;
+    double clearSearchButtonWidth = area.getWidth() / 6;
+    double messageBarHeight = area.getHeight() / 11;
+
+    // top bar area
+    auto topBar = area.removeFromTop(topBarHeight);
+    
+    // top bar components
+    addTrackButton.setBounds(topBar.removeFromLeft(leftButtonWidth));
+    clearPlaylistButton.setBounds(topBar.removeFromLeft(leftButtonWidth));
+    clearSearchButton.setBounds(topBar.removeFromRight(clearSearchButtonWidth));
+    searchBox.setBounds(topBar.removeFromRight(searchBoxWidth).reduced(1));
+
+    // message bar component
+    playlistMessageBox.setBounds(area.removeFromTop(messageBarHeight));
+
+    // table component
+    tableComponent.setBounds(area);
 }
 
 int PlaylistComponent::getNumRows()
@@ -150,15 +169,15 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
     // create custom component play buttons in the 3rd and 4th columns
     if (columnId == 3)
     {
-        // check that a custom component does not already exist
+        // make 'left deck' load button in rows with content
         if (existingComponentToUpdate == nullptr)
         {
             // create a text button component for the left deck
             juce::TextButton* leftDeckButton = new juce::TextButton{ "Left Deck" };
-
-            // give it an ID matching the track file name
             juce::String id { shownTracks[rowNumber].trackID };
+            juce::String name{ "leftDeck" };
             leftDeckButton->setComponentID(id);
+            leftDeckButton->setName(name);
 
             // assign it the button listener
             leftDeckButton->addListener(this);
@@ -166,6 +185,8 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
             // save it as the existing component to update, to return below
             existingComponentToUpdate = leftDeckButton;
         }
+        // refresh the component ID for existing buttons
+        // this is necessary because which track is in the row can change
         if (existingComponentToUpdate->isVisible())
         {
             juce::String id{ shownTracks[rowNumber].trackID };
@@ -179,18 +200,22 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
     }
     if (columnId == 4)
     {
-        // check that a custom component does not already exist
+        // make 'right deck' load button in rows with content
         if (existingComponentToUpdate == nullptr)
         {
             juce::TextButton* rightDeckButton = new juce::TextButton{ "Right Deck" };
             juce::String id{ shownTracks[rowNumber].trackID };
+            juce::String name{ "rightDeck" };
             rightDeckButton->setComponentID(id);
+            rightDeckButton->setName(name);
 
             // assign it the button listener
             rightDeckButton->addListener(this);
 
             existingComponentToUpdate = rightDeckButton;
         }
+        // refresh the component ID for existing buttons
+        // this is necessary because which track is in the row can change
         if (existingComponentToUpdate->isVisible())
         {
             juce::String id{ shownTracks[rowNumber].trackID };
@@ -199,19 +224,23 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
     }
     if (columnId == 5)
     {
-        // check that a custom component does not already exist
+        // make 'remove track' button in rows with content
         if (existingComponentToUpdate == nullptr)
         {
             // create a button to remove the track
             juce::TextButton* removeTrackButton = new juce::TextButton{ "Remove Track" };
             juce::String id{ shownTracks[rowNumber].trackID };
+            juce::String name{ "removeTrack" };
             removeTrackButton->setComponentID(id);
+            removeTrackButton->setName(name);
 
             // assign it the button listener
             removeTrackButton->addListener(this);
 
             existingComponentToUpdate = removeTrackButton;
         }
+        // refresh the component ID for existing buttons
+        // this is necessary because which track is in the row can change
         if (existingComponentToUpdate->isVisible())
         {
             juce::String id{ shownTracks[rowNumber].trackID };
@@ -227,8 +256,6 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
     // add track button
     if (button == &addTrackButton)
     {
-        DBG("add track button was clicked");
-
         // create a file chooser GUI for the user to select a file
         juce::FileChooser chooser{ "Select a track to load..." };
         // if the user selects a file to open, load the file
@@ -238,13 +265,26 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
             clearSearch();
 
             // convert the chosen file to a URL and load it
-            /*auto audioURL = juce::URL{ chooser.getResult() };*/
             juce::URL audioURL { chooser.getResult() };
             musicLibrary.addTrack(audioURL);
 
             // update playlist to show the new track
             shownTracks = musicLibrary.getTracks();
             tableComponent.updateContent();
+        }
+    }
+    // clear playlist button
+    else if (button == &clearPlaylistButton)
+    {
+        if (!shownTracks.empty())
+        {
+            //juce::String alertTitle{ "Clear Playlist" };
+            //juce::String alert{ "Are you sure you want to clear the playlist?" };
+            //juce::AlertWindow::showOkCancelBox(juce::AlertWindow::AlertIconType::WarningIcon, 
+            //    alertTitle, alert, "", "", &clearPlaylistButton, 
+            //    juce::ModalComponentManager::Callback* juce::ModalCallbackFunction::create(clearPlaylist&);
+            //musicLibrary.clearLibrary();
+            //refreshPlaylist();
         }
     }
     // clear search button
@@ -254,34 +294,21 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
         clearSearch();
     }
     // track removal buttons in the tableComponent
-    else if (button->getButtonText() == "Remove Track")
+    else if (button->getName() == "removeTrack")
     {
         // get the track id from the component id on the button
         int trackID = button->getComponentID().getIntValue();
         musicLibrary.removeTrack(trackID);
 
         // refresh the table
-        shownTracks.clear();
-        shownTracks = musicLibrary.getTracks();
-        tableComponent.updateContent();
+        refreshPlaylist();
 
     }
-    // deck loading buttons in the tableComponent
-    else
+    // left deck loading buttons in the tableComponent
+    else if (button->getName() == "leftDeck")
     {
         // get the track id from the component id on the button
         int trackID = button->getComponentID().getIntValue();
-
-        // get the button text to see which deck it is for
-        DeckGUI* deckToUse{ nullptr };
-        if (button->getButtonText() == "Left Deck")
-        {
-            deckToUse = leftDeck;
-        }
-        else if (button->getButtonText() == "Right Deck")
-        {
-            deckToUse = rightDeck;
-        }
 
         // get the relevant track from the music library to load
         try {
@@ -289,9 +316,28 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
             DBG("Track found with name " + track.fileName);
 
             // load the file to the correct deck
-            deckToUse->loadURL(track.audioURL, track.fileName);
+            leftDeck->loadURL(track.audioURL, track.fileName);
         }        
         catch(const std::exception& e) // there was an error looking up the track
+        {
+            DBG(e.what());
+        }
+    }
+    // right deck loading buttons in the tableComponent
+    else if (button->getName() == "rightDeck")
+    {
+        // get the track id from the component id on the button
+        int trackID = button->getComponentID().getIntValue();
+
+        // get the relevant track from the music library to load
+        try {
+            MusicTrack track{ musicLibrary.getTrack(trackID) };
+            DBG("Track found with name " + track.fileName);
+
+            // load the file to the correct deck
+            rightDeck->loadURL(track.audioURL, track.fileName);
+        }
+        catch (const std::exception& e) // there was an error looking up the track
         {
             DBG(e.what());
         }
@@ -330,9 +376,6 @@ void PlaylistComponent::textEditorReturnKeyPressed(juce::TextEditor& textEditor)
             // display success message
             playlistMessageBox.setText("Displaying search results...",
                 juce::NotificationType::dontSendNotification);
-
-            // show the 'clear search' button
-            clearSearchButton.setVisible(true);
         }
         // if no results were found, show message
         else
@@ -343,9 +386,7 @@ void PlaylistComponent::textEditorReturnKeyPressed(juce::TextEditor& textEditor)
             playlistMessageBox.setText("No results for your search were found. Displaying all tracks in your library.", juce::NotificationType::dontSendNotification);
 
             // show full music library 
-            shownTracks.clear();
-            shownTracks = musicLibrary.getTracks();
-            tableComponent.updateContent();
+            refreshPlaylist();
         }
     }
 }
@@ -353,9 +394,7 @@ void PlaylistComponent::textEditorReturnKeyPressed(juce::TextEditor& textEditor)
 void PlaylistComponent::clearSearch()
 {
     // clear the search results and revert to showing all tracks
-    shownTracks.clear();
-    shownTracks = musicLibrary.getTracks();
-    tableComponent.updateContent();
+    refreshPlaylist();
 
     // update the playlist message
     playlistMessageBox.setText("Displaying all tracks in your library.",
@@ -363,7 +402,21 @@ void PlaylistComponent::clearSearch()
 
     // clear the search term from the search box
     searchBox.setText("");
+}
 
-    // hide the 'clear search' button again
-    clearSearchButton.setVisible(false);
+
+void PlaylistComponent::refreshPlaylist()
+{
+    shownTracks.clear();                        // clear the tracks
+    shownTracks = musicLibrary.getTracks();     // get fresh set from the library
+    tableComponent.updateContent();             // update the table
+}
+
+void PlaylistComponent::clearPlaylist(int response)
+{
+    if (response == 1)
+    {
+        musicLibrary.clearLibrary();
+        refreshPlaylist();
+    }
 }

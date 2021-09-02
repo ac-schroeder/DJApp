@@ -41,23 +41,6 @@ std::vector<MusicTrack> MusicLibrary::getTracks()
     return libraryTracks;
 }
 
-// Returns a pointer to the matching track if a match is found, or else nullptr
-// Design based on https://stackoverflow.com/questions/2639255/return-a-null-object-if-search-result-not-found
-MusicTrack* MusicLibrary::searchLibrary(juce::String keyword)
-{
-    // create a null pointer to return as default, for if no tracks found
-    MusicTrack* matchedTrack { nullptr };
-    // loop over library tracks to find matching track
-    for (MusicTrack& track : libraryTracks)
-    {
-        if (track.fileName == keyword)
-        {
-            matchedTrack = &track; // reassign the pointer to the track
-            DBG("The matched track exists! track.filename is " + track.fileName);
-        }
-    }
-    return matchedTrack;
-}
 
 /** Looks up a track in the library by trackID */
 MusicTrack MusicLibrary::getTrack(int _trackID)
@@ -103,13 +86,10 @@ void MusicLibrary::removeTrack(int _trackID)
 {
     if (!libraryTracks.empty())
     {
-        DBG("Attempting to remove track. " + std::to_string(_trackID) + " Library Tracks is not empty");
         for (int i = libraryTracks.size() - 1; i >= 0; i--)
         {
             if (libraryTracks.at(i).trackID == _trackID)
             {
-                //DBG("I found trackID " + std::to_string(_trackID) 
-                //    + " and the filename here is " + libraryTracks[i].fileName);
                 libraryTracks.erase(libraryTracks.begin() + i);
                 break;
             }
@@ -117,36 +97,55 @@ void MusicLibrary::removeTrack(int _trackID)
     }
 }
 
+void MusicLibrary::clearLibrary()
+{
+    libraryTracks.clear();
+}
+
+// Returns a pointer to the matching track if a match is found, or else nullptr
+// Design based on https://stackoverflow.com/questions/2639255/return-a-null-object-if-search-result-not-found
+MusicTrack* MusicLibrary::searchLibrary(juce::String keyword)
+{
+    // create a null pointer to return as default, for if no tracks found
+    MusicTrack* matchedTrack{ nullptr };
+    // loop over library tracks to find matching track
+    for (MusicTrack& track : libraryTracks)
+    {
+        if (track.fileName == keyword)
+        {
+            matchedTrack = &track; // reassign the pointer to the track
+            DBG("The matched track exists! track.filename is " + track.fileName);
+        }
+    }
+    return matchedTrack;
+}
+
 void MusicLibrary::saveLibrary()
 {
-    // check that there are tracks to save
-    if (!libraryTracks.empty())
+    // create the CSV file if not already created
+    tracksFile.create();
+
+    // convert file to an output stream to write to
+    juce::FileOutputStream output{ tracksFile };
+    // check that it opened okay
+    if (output.openedOk())
     {
-        // create the CSV file if not already created
-        tracksFile.create();
+        // set to beginning of the stream and clear the file
+        output.setPosition(0);
+        output.truncate();
 
-        // convert file to an output stream to write to
-        juce::FileOutputStream output{ tracksFile };
-        // check that it opened okay
-        if (output.openedOk())
+        // save each track to the CSV file
+        for (MusicTrack& track : libraryTracks)
         {
-            // set to beginning of the stream and clear the file
-            output.setPosition(0);
-            output.truncate();
-
-            // save each track to the CSV file
-            for (MusicTrack& track : libraryTracks)
-            {
-                // convert the trackID to a string
-                juce::String trackID{ track.trackID };
-                // convert the URL to a string
-                juce::String audioURL = track.audioURL.getLocalFile().getFullPathName();
-                // make a comma-delimited string for the track's properties
-                juce::String line = trackID + "," + track.fileName + "," 
-                                    + audioURL + "," + track.length + "\n";
-                // write the line to the CSV file
-                output.writeText(line, false, false, "\n");
-            }
+            // convert the trackID to a string
+            juce::String trackID{ track.trackID };
+            // convert the URL to a string
+            juce::String audioURL = track.audioURL.getLocalFile().getFullPathName();
+            // make a comma-delimited string for the track's properties
+            juce::String line = trackID + "," + track.fileName + "," 
+                                + audioURL + "," + track.length + "\n";
+            // write the line to the CSV file
+            output.writeText(line, false, false, "\n");
         }
     }
 }

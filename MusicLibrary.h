@@ -20,16 +20,18 @@ public:
     MusicLibrary(juce::AudioFormatManager& _formatManager);
     ~MusicLibrary();
 
-    // can this be a vector of pointers to the MusicTrack objects?
+    /** Returns the full music library of tracks */
     std::vector<MusicTrack> getTracks();
-    /** Returns a pointer to the matching track if a match is found, or else nullptr */
-    MusicTrack* searchLibrary(juce::String keyword);
     /** Looks up a track in the library by trackID */
     MusicTrack getTrack(int _trackID);
     /** Adds a track to the music library */
     void addTrack(juce::URL audioURL);
     /** Removes a track from the music library */
     void removeTrack(int _trackID);
+    /** Clears the music library of all tracks */
+    void clearLibrary();
+    /** Returns a pointer to the matching track if a match is found, or else nullptr */
+    MusicTrack* searchLibrary(juce::String keyword);
 
 private:
     // the music library

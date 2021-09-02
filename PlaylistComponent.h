@@ -15,6 +15,7 @@
 #include <JuceHeader.h>
 #include "MusicLibrary.h"
 #include "DeckGUI.h"
+#include "MainLookAndFeel.h"
 // #include "MusicTrack.h"
 
 
@@ -63,16 +64,16 @@ public:
     void textEditorReturnKeyPressed(juce::TextEditor& textEditor) override;
 
 private:
-    // the table component for the playlist track info and play buttons
-    juce::TableListBox tableComponent;
-    // the Add Track button to add files to the playlist
+    // top bar components
     juce::TextButton addTrackButton{ "Add Track" };
-    // the Search button to search for tracks in the playlist
+    juce::TextButton clearPlaylistButton{ "Clear Playlist" };
+    juce::Label searchBoxLabel;
     juce::TextEditor searchBox;
-    // a button to clear search results
     juce::TextButton clearSearchButton{ "Clear search" };
-    // a message box to inform user of search results
+    // message bar components
     juce::Label playlistMessageBox;
+    // table component
+    juce::TableListBox tableComponent;
 
     // the user's music library 
     MusicLibrary musicLibrary;
@@ -83,8 +84,15 @@ private:
     DeckGUI* rightDeck;
     DeckGUI* leftDeck;
 
+    // custom look and feel
+    MainLookAndFeel mainLookAndFeel;
+
     /** Clears the search box and any shown search results */
     void clearSearch();
+    /** Refreshes the playlist displayed in the tableComponent */
+    void refreshPlaylist();
+    /** Alert window callback function for clearing the music library */
+    void clearPlaylist(int response);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlaylistComponent)
 };

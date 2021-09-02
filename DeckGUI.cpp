@@ -235,16 +235,6 @@ void DeckGUI::sliderValueChanged(juce::Slider* slider)
         DBG("DeckGUI::sliderValueChanged: positionSlider " + std::to_string(slider->getValue()));
         player->setPositionRelative(slider->getValue());
     }
-    // implement low shelf volume slider
-    //if (slider == &lowShelfGainSlider)
-    //{
-    //    player->setLowShelf(slider->getValue());
-    //}
-    //// implement high shelf volume slider
-    //if (slider == &highShelfGainSlider)
-    //{
-    //    player->setHighShelf(slider->getValue());
-    //}
 }
 
 /** Implement FileDragAndDrop */

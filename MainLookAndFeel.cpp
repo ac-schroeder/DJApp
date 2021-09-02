@@ -32,3 +32,20 @@ void MainLookAndFeel::drawGroupComponentOutline(juce::Graphics& g, int w, int h,
     border.reduce(0, 2);
     g.drawRoundedRectangle(border, 6, 2);
 }
+
+void MainLookAndFeel::fillTextEditorBackground(juce::Graphics& g, int width, int height, juce::TextEditor& textEditor)
+{
+    g.fillAll(juce::Colours::darkgrey);
+}
+
+void MainLookAndFeel::drawTextEditorOutline(juce::Graphics& g, int width, int height, juce::TextEditor& textEditor)
+{
+    g.setColour(juce::Colours::darkgrey);
+    g.drawRect(textEditor.getLocalBounds(), 1);
+
+    //if (textEditor.hasKeyboardFocus(false))
+    //{
+    //    //g.setColour(juce::Colours::darkgrey);
+    //    //g.drawRect(area, 1);
+    //}
+}
