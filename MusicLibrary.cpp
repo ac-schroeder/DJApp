@@ -19,10 +19,15 @@ MusicLibrary::MusicLibrary(juce::AudioFormatManager& _formatManager)
         + "\\libraryTracks.csv";
     tracksFile = filePath;
 
-    DBG(tracksFile.getFullPathName());
-
     // attempt to load a previously saved library CSV file
     loadLibrary();
+
+    // initialise the trackID counter
+    if (!libraryTracks.empty())
+    {
+        int lastID = libraryTracks[libraryTracks.size() - 1].trackID;
+        trackIDCount = lastID;
+    }
 }
 
 MusicLibrary::~MusicLibrary()
@@ -38,7 +43,7 @@ std::vector<MusicTrack> MusicLibrary::getTracks()
 
 // Returns a pointer to the matching track if a match is found, or else nullptr
 // Design based on https://stackoverflow.com/questions/2639255/return-a-null-object-if-search-result-not-found
-MusicTrack* MusicLibrary::getTrack(juce::String keyword)
+MusicTrack* MusicLibrary::searchLibrary(juce::String keyword)
 {
     // create a null pointer to return as default, for if no tracks found
     MusicTrack* matchedTrack { nullptr };
@@ -54,9 +59,32 @@ MusicTrack* MusicLibrary::getTrack(juce::String keyword)
     return matchedTrack;
 }
 
+/** Looks up a track in the library by trackID */
+MusicTrack MusicLibrary::getTrack(int _trackID)
+{
+    MusicTrack* matchedTrack{ nullptr };;
+    for (MusicTrack& track : libraryTracks)
+    {
+        if (track.trackID == _trackID)
+        {
+            matchedTrack = &track;
+        }
+    }
+    
+    if (matchedTrack == nullptr)
+    {
+        throw std::invalid_argument{ "Track could not be found" };
+    }
+
+    return *matchedTrack;
+}
+
 // add a track to the track library
 void MusicLibrary::addTrack(juce::URL audioURL)
 {
+    // get the next trackID number and increment the counter
+    int trackID = ++trackIDCount;
+
     // get the filename from the URL
     juce::String fileName = audioURL.getFileName();
 
@@ -65,20 +93,23 @@ void MusicLibrary::addTrack(juce::URL audioURL)
     std::string length{ sourceReader.getTrackLength() };
 
     // create a new track object and add to the libraryTracks list
-    MusicTrack track{ fileName, audioURL, length };
+    MusicTrack track{ trackID, fileName, audioURL, length };
     libraryTracks.push_back(track);
 }
 
 // Remove a track from the music library
-// technique from https://stackoverflow.com/questions/8628951/remove-elements-of-a-vector-inside-the-loop
-void MusicLibrary::removeTrack(juce::String fileName)
+// Technique from https://stackoverflow.com/questions/8628951/remove-elements-of-a-vector-inside-the-loop
+void MusicLibrary::removeTrack(int _trackID)
 {
     if (!libraryTracks.empty())
     {
+        DBG("Attempting to remove track. " + std::to_string(_trackID) + " Library Tracks is not empty");
         for (int i = libraryTracks.size() - 1; i >= 0; i--)
         {
-            if (libraryTracks.at(i).fileName == fileName)
+            if (libraryTracks.at(i).trackID == _trackID)
             {
+                //DBG("I found trackID " + std::to_string(_trackID) 
+                //    + " and the filename here is " + libraryTracks[i].fileName);
                 libraryTracks.erase(libraryTracks.begin() + i);
                 break;
             }
@@ -106,10 +137,13 @@ void MusicLibrary::saveLibrary()
             // save each track to the CSV file
             for (MusicTrack& track : libraryTracks)
             {
+                // convert the trackID to a string
+                juce::String trackID{ track.trackID };
                 // convert the URL to a string
                 juce::String audioURL = track.audioURL.getLocalFile().getFullPathName();
                 // make a comma-delimited string for the track's properties
-                juce::String line = track.fileName + "," + audioURL + "," + track.length + "\n";
+                juce::String line = trackID + "," + track.fileName + "," 
+                                    + audioURL + "," + track.length + "\n";
                 // write the line to the CSV file
                 output.writeText(line, false, false, "\n");
             }
@@ -135,16 +169,17 @@ void MusicLibrary::loadLibrary()
                 juce::StringArray tokens = juce::StringArray::fromTokens(line, ",", "\"");
 
                 // convert the URL string to a juce File object and verify it still exists
-                juce::File audioFile{ tokens[1] };
+                juce::File audioFile{ tokens[2] };
                 if (audioFile.exists())
                 {
                     // convert tokens to Music Track data member data types
-                    juce::String fileName{ tokens[0] };
+                    int trackID = tokens[0].getIntValue();
+                    juce::String fileName{ tokens[1] };
                     juce::URL audioURL{ audioFile };
-                    std::string length = tokens[2].toStdString();
+                    std::string length = tokens[3].toStdString();
 
                     // create the Music Track
-                    MusicTrack track{ fileName, audioURL, length };
+                    MusicTrack track{ trackID, fileName, audioURL, length };
 
                     // add the track to the libraryTracks vector
                     libraryTracks.push_back(track);

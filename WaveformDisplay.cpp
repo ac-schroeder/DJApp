@@ -75,14 +75,7 @@ void WaveformDisplay::loadURL(juce::URL audioURL)
     audioThumb.clear();
     // set the audioURL as the input source for the audio thumbnail
     fileLoaded = audioThumb.setSource(new juce::URLInputSource(audioURL));
-    if (fileLoaded)
-    {
-        DBG("WaveformDisplay::loadURL: File is loaded.");
-    }
-    else
-    {
-        DBG("WaveformDisplay::loadURL: File was not loaded.");
-    }
+    // TODO: Throw exception if file could not load (!fileLoaded)
 }
 
 void WaveformDisplay::setPositionRelative(double _position)

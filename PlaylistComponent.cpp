@@ -157,7 +157,7 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
             juce::TextButton* leftDeckButton = new juce::TextButton{ "Left Deck" };
 
             // give it an ID matching the track file name
-            juce::String id { shownTracks[rowNumber].fileName };
+            juce::String id { shownTracks[rowNumber].trackID };
             leftDeckButton->setComponentID(id);
 
             // assign it the button listener
@@ -165,6 +165,11 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
 
             // save it as the existing component to update, to return below
             existingComponentToUpdate = leftDeckButton;
+        }
+        if (existingComponentToUpdate->isVisible())
+        {
+            juce::String id{ shownTracks[rowNumber].trackID };
+            existingComponentToUpdate->setComponentID(id);
         }
         //else
         //{
@@ -178,13 +183,18 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
         if (existingComponentToUpdate == nullptr)
         {
             juce::TextButton* rightDeckButton = new juce::TextButton{ "Right Deck" };
-            juce::String id{ shownTracks[rowNumber].fileName };
+            juce::String id{ shownTracks[rowNumber].trackID };
             rightDeckButton->setComponentID(id);
 
             // assign it the button listener
             rightDeckButton->addListener(this);
 
             existingComponentToUpdate = rightDeckButton;
+        }
+        if (existingComponentToUpdate->isVisible())
+        {
+            juce::String id{ shownTracks[rowNumber].trackID };
+            existingComponentToUpdate->setComponentID(id);
         }
     }
     if (columnId == 5)
@@ -194,13 +204,18 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber,
         {
             // create a button to remove the track
             juce::TextButton* removeTrackButton = new juce::TextButton{ "Remove Track" };
-            juce::String id{ shownTracks[rowNumber].fileName };
+            juce::String id{ shownTracks[rowNumber].trackID };
             removeTrackButton->setComponentID(id);
 
             // assign it the button listener
             removeTrackButton->addListener(this);
 
             existingComponentToUpdate = removeTrackButton;
+        }
+        if (existingComponentToUpdate->isVisible())
+        {
+            juce::String id{ shownTracks[rowNumber].trackID };
+            existingComponentToUpdate->setComponentID(id);
         }
     }
     // return the custom component, or nullptr if the second column
@@ -241,11 +256,9 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
     // track removal buttons in the tableComponent
     else if (button->getButtonText() == "Remove Track")
     {
-        DBG("I'm a track removal button!");
-
-        // get the track number from the component id on the button
-        juce::String fileName = button->getComponentID();
-        musicLibrary.removeTrack(fileName);
+        // get the track id from the component id on the button
+        int trackID = button->getComponentID().getIntValue();
+        musicLibrary.removeTrack(trackID);
 
         // refresh the table
         shownTracks.clear();
@@ -256,8 +269,8 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
     // deck loading buttons in the tableComponent
     else
     {
-        // get the track number from the component id on the button
-        juce::String fileName = button->getComponentID();
+        // get the track id from the component id on the button
+        int trackID = button->getComponentID().getIntValue();
 
         // get the button text to see which deck it is for
         DeckGUI* deckToUse{ nullptr };
@@ -271,18 +284,16 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
         }
 
         // get the relevant track from the music library to load
-        MusicTrack* track { musicLibrary.getTrack(fileName) };
-        if (track != nullptr) // track was found
-        {
-            DBG("Pointer points to track with name " + track->fileName);
+        try {
+            MusicTrack track{ musicLibrary.getTrack(trackID) };
+            DBG("Track found with name " + track.fileName);
 
             // load the file to the correct deck
-            deckToUse->loadURL(track->audioURL, track->fileName);
-        }
-        else // there was an error looking up the track
+            deckToUse->loadURL(track.audioURL, track.fileName);
+        }        
+        catch(const std::exception& e) // there was an error looking up the track
         {
-            DBG("Track could not be found");
-            // TODO: throw exception
+            DBG(e.what());
         }
     }
 }
@@ -302,7 +313,7 @@ void PlaylistComponent::textEditorReturnKeyPressed(juce::TextEditor& textEditor)
     else
     {
         // try to find a track in the library to match the search input
-        MusicTrack* track = musicLibrary.getTrack(searchText);  
+        MusicTrack* track = musicLibrary.searchLibrary(searchText);  
         // if a matching track was found, display results
         if (track != nullptr)
         {

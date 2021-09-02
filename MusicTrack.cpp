@@ -10,11 +10,11 @@
 
 #include "MusicTrack.h"
 
-MusicTrack::MusicTrack(juce::String _fileName, juce::URL _audioURL, std::string _length)
-    : fileName { _fileName },
+MusicTrack::MusicTrack(int _trackID, juce::String _fileName, juce::URL _audioURL, std::string _length)
+    : trackID{ _trackID },
+      fileName { _fileName },
       audioURL{ _audioURL }, 
       length{ _length }
 {
 
-    trackID = countID++;
 }
