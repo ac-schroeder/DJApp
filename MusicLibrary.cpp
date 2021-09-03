@@ -43,6 +43,7 @@ std::vector<MusicTrack> MusicLibrary::getTracks()
 
 
 /** Looks up a track in the library by trackID */
+//TODO: Can this return a reference to the track, instead? I.e. MusicTrack& MusicLibrary::getTrack(...
 MusicTrack MusicLibrary::getTrack(int _trackID)
 {
     MusicTrack* matchedTrack{ nullptr };;

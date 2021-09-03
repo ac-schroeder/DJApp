@@ -92,7 +92,7 @@ private:
     /** Refreshes the playlist displayed in the tableComponent */
     void refreshPlaylist();
     /** Alert window callback function for clearing the music library */
-    void clearPlaylist(int response);
+    //void clearPlaylist(int response);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlaylistComponent)
 };

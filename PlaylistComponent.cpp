@@ -11,6 +11,17 @@
 #include <JuceHeader.h>
 #include "PlaylistComponent.h"
 
+// TODO: try putting this above the header class declaration, and the function as a member
+//template <typename CallBackFn>
+//void CallBackFn::clearPlaylist(int response)
+//{
+//    if (response == 1)
+//    {
+//        musicLibrary.clearLibrary();
+//        refreshPlaylist();
+//    }
+//}
+
 //==============================================================================
 PlaylistComponent::PlaylistComponent(juce::AudioFormatManager& _formatManager, 
                                      DeckGUI* _leftDeck,
@@ -278,13 +289,29 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
     {
         if (!shownTracks.empty())
         {
-            //juce::String alertTitle{ "Clear Playlist" };
-            //juce::String alert{ "Are you sure you want to clear the playlist?" };
+            juce::String alertTitle{ "Clear Playlist" };
+            juce::String alert{ "Are you sure you want to clear the playlist?" };
+
             //juce::AlertWindow::showOkCancelBox(juce::AlertWindow::AlertIconType::WarningIcon, 
-            //    alertTitle, alert, "", "", &clearPlaylistButton, 
-            //    juce::ModalComponentManager::Callback* juce::ModalCallbackFunction::create(clearPlaylist&);
-            //musicLibrary.clearLibrary();
-            //refreshPlaylist();
+            //    alertTitle, alert, "", "", this->getParentComponent(), 
+            //    juce::ModalCallbackFunction::create([this](int response) {
+            //        if (response == 1)
+            //        {
+            //            musicLibrary.clearLibrary();
+            //            refreshPlaylist();
+            //        }
+            //    }));
+            // 
+            //             
+            juce::AlertWindow::showOkCancelBox(juce::AlertWindow::AlertIconType::QuestionIcon, 
+            alertTitle, alert, "", "", this->getParentComponent(),
+                juce::ModalCallbackFunction::create([this](int response) {
+                if (response == 1)
+                {
+                    musicLibrary.clearLibrary();
+                    refreshPlaylist();
+                }
+                    }));
         }
     }
     // clear search button
@@ -412,11 +439,4 @@ void PlaylistComponent::refreshPlaylist()
     tableComponent.updateContent();             // update the table
 }
 
-void PlaylistComponent::clearPlaylist(int response)
-{
-    if (response == 1)
-    {
-        musicLibrary.clearLibrary();
-        refreshPlaylist();
-    }
-}
+
