@@ -11,17 +11,6 @@
 #include <JuceHeader.h>
 #include "PlaylistComponent.h"
 
-// TODO: try putting this above the header class declaration, and the function as a member
-//template <typename CallBackFn>
-//void CallBackFn::clearPlaylist(int response)
-//{
-//    if (response == 1)
-//    {
-//        musicLibrary.clearLibrary();
-//        refreshPlaylist();
-//    }
-//}
-
 //==============================================================================
 PlaylistComponent::PlaylistComponent(juce::AudioFormatManager& _formatManager, 
                                      DeckGUI* _leftDeck,
@@ -289,29 +278,21 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
     {
         if (!shownTracks.empty())
         {
+            // set alert messages
             juce::String alertTitle{ "Clear Playlist" };
-            juce::String alert{ "Are you sure you want to clear the playlist?" };
-
-            //juce::AlertWindow::showOkCancelBox(juce::AlertWindow::AlertIconType::WarningIcon, 
-            //    alertTitle, alert, "", "", this->getParentComponent(), 
-            //    juce::ModalCallbackFunction::create([this](int response) {
-            //        if (response == 1)
-            //        {
-            //            musicLibrary.clearLibrary();
-            //            refreshPlaylist();
-            //        }
-            //    }));
-            // 
-            //             
+            juce::String alert{ "Are you sure you want to clear the playlist?" };  
+            // alert the user with a confirmation dialog box
             juce::AlertWindow::showOkCancelBox(juce::AlertWindow::AlertIconType::QuestionIcon, 
-            alertTitle, alert, "", "", this->getParentComponent(),
+                alertTitle, alert, "", "", this->getParentComponent(),
                 juce::ModalCallbackFunction::create([this](int response) {
-                if (response == 1)
-                {
-                    musicLibrary.clearLibrary();
-                    refreshPlaylist();
-                }
-                    }));
+                    // only clear the library if the user confirms
+                    if (response == 1)
+                    {
+                        musicLibrary.clearLibrary();
+                        refreshPlaylist();
+                    }
+                })
+            );
         }
     }
     // clear search button
