@@ -367,15 +367,31 @@ void PlaylistComponent::textEditorReturnKeyPressed(juce::TextEditor& textEditor)
     else
     {
         // try to find a track in the library to match the search input
-        MusicTrack* track = musicLibrary.searchLibrary(searchText);  
-        // if a matching track was found, display results
-        if (track != nullptr)
-        {
-            DBG("A track was found! " + track->fileName);
+        //MusicTrack* track = musicLibrary.searchLibrary(searchText);  
+        //// if a matching track was found, display results
+        //if (track != nullptr)
+        //{
+        //    DBG("A track was found! " + track->fileName);
 
+        //    // update the playlist to show the search results
+        //    shownTracks.clear(); 
+        //    shownTracks.push_back(*track);
+        //    tableComponent.updateContent();
+
+        //    // repaint to update row data in case of consecutive searches, which doesn't change the number of rows and therefore will not be updated by updateContent()
+        //    repaint();
+
+        //    // display success message
+        //    playlistMessageBox.setText("Displaying search results...",
+        //        juce::NotificationType::dontSendNotification);
+        //}
+         
+        std::vector<MusicTrack> matchedTracks = musicLibrary.searchLibrary(searchText);
+        if (!matchedTracks.empty())
+        {
             // update the playlist to show the search results
             shownTracks.clear(); 
-            shownTracks.push_back(*track);
+            shownTracks = matchedTracks;
             tableComponent.updateContent();
 
             // repaint to update row data in case of consecutive searches, which doesn't change the number of rows and therefore will not be updated by updateContent()
@@ -383,7 +399,7 @@ void PlaylistComponent::textEditorReturnKeyPressed(juce::TextEditor& textEditor)
 
             // display success message
             playlistMessageBox.setText("Displaying search results...",
-                juce::NotificationType::dontSendNotification);
+                juce::dontSendNotification);
         }
         // if no results were found, show message
         else
@@ -391,7 +407,7 @@ void PlaylistComponent::textEditorReturnKeyPressed(juce::TextEditor& textEditor)
             DBG("There was no match for your search: " + searchText);
 
             // display search failure message
-            playlistMessageBox.setText("No results for your search were found. Displaying all tracks in your library.", juce::NotificationType::dontSendNotification);
+            playlistMessageBox.setText("No results for your search were found. Displaying all tracks in your library.", juce::dontSendNotification);
 
             // show full music library 
             refreshPlaylist();

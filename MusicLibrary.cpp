@@ -105,20 +105,36 @@ void MusicLibrary::clearLibrary()
 
 // Returns a pointer to the matching track if a match is found, or else nullptr
 // Design based on https://stackoverflow.com/questions/2639255/return-a-null-object-if-search-result-not-found
-MusicTrack* MusicLibrary::searchLibrary(juce::String keyword)
+//MusicTrack* MusicLibrary::searchLibrary(juce::String keyword)
+//{
+//    // create a null pointer to return as default, for if no tracks found
+//    MusicTrack* matchedTrack{ nullptr };
+//    // loop over library tracks to find matching track
+//    for (MusicTrack& track : libraryTracks)
+//    {
+//        if (track.fileName == keyword)
+//        {
+//            matchedTrack = &track; // reassign the pointer to the track
+//            DBG("The matched track exists! track.filename is " + track.fileName);
+//        }
+//    }
+//    return matchedTrack;
+//}
+
+std::vector<MusicTrack> MusicLibrary::searchLibrary(juce::String& keyword)
 {
-    // create a null pointer to return as default, for if no tracks found
-    MusicTrack* matchedTrack{ nullptr };
+    std::vector<MusicTrack> matchedTracks;
     // loop over library tracks to find matching track
     for (MusicTrack& track : libraryTracks)
     {
-        if (track.fileName == keyword)
+        if (track.fileName.containsWholeWordIgnoreCase(keyword))
+        //if (track.fileName.matchesWildcard(keyword, true))
         {
-            matchedTrack = &track; // reassign the pointer to the track
-            DBG("The matched track exists! track.filename is " + track.fileName);
+            DBG("A matched track exists! track.filename is " + track.fileName);
+            matchedTracks.push_back(track);
         }
     }
-    return matchedTrack;
+    return matchedTracks;
 }
 
 void MusicLibrary::saveLibrary()

@@ -31,7 +31,8 @@ public:
     /** Clears the music library of all tracks */
     void clearLibrary();
     /** Returns a pointer to the matching track if a match is found, or else nullptr */
-    MusicTrack* searchLibrary(juce::String keyword);
+    /*MusicTrack* searchLibrary(juce::String keyword);*/
+    std::vector<MusicTrack> searchLibrary(juce::String& keyword);
 
 private:
     // the music library
