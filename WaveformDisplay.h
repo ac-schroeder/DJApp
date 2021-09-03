@@ -42,7 +42,7 @@ private:
     // flag to decide whether to paint the waveform to the component
     bool fileLoaded;
     // playhead position
-    double position;
+    double position{ 0 };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveformDisplay)
 };

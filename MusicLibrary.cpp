@@ -123,12 +123,18 @@ void MusicLibrary::clearLibrary()
 
 std::vector<MusicTrack> MusicLibrary::searchLibrary(juce::String& keyword)
 {
+    // convert keyword to a wildcard pattern
+    keyword = "*" + keyword + "*";
+    juce::StringRef pattern{ keyword };
+
+    // set up an empty vector of matching tracks to return
     std::vector<MusicTrack> matchedTracks;
+
     // loop over library tracks to find matching track
     for (MusicTrack& track : libraryTracks)
     {
-        if (track.fileName.containsWholeWordIgnoreCase(keyword))
-        //if (track.fileName.matchesWildcard(keyword, true))
+        // check if any tracks match the wildcard pattern of the keyword
+        if (track.fileName.matchesWildcard(pattern, true))
         {
             DBG("A matched track exists! track.filename is " + track.fileName);
             matchedTracks.push_back(track);

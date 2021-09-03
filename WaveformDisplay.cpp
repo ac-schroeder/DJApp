@@ -18,8 +18,7 @@ WaveformDisplay::WaveformDisplay(juce::AudioFormatManager& formatManagerToUse,
         1000,                       // sourceSamplesPerThumbnailSample: image resolution
         formatManagerToUse,         // AudioFormatManager object: to read file to the audioThumbnail
         cacheToUse},                // AudioThumbnailCache object: to store/share data for all thumbs
-      fileLoaded{ false },      // file is not loaded yet
-      position{0}               // initial playhead position is 0
+      fileLoaded{ false }       // file is not loaded yet
 {
     // register change listener
     audioThumb.addChangeListener(this);
