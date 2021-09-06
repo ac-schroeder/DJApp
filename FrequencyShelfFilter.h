@@ -30,18 +30,26 @@ public:
     /** Implements Component: Repaints the component on resize. */
     void resized() override;
 
-    /** Implements Slider::Listener: Processes slider value changes. */
+    /** 
+     * Implements Slider::Listener: Processes slider value changes. 
+     * Sends frequency shelf coeeficient values to the player for filtering.
+     */
     void sliderValueChanged(juce::Slider* slider) override;
 
 private:
+    /** Sets up slider ranges, values, and component names. */
+    void setUpSliders();
+    /** Sets up slider labels for the sliders. */
+    void setUpSliderLabels();
+
     // Pointer to the player, used for setting shelf filter coefficients
     DJAudioPlayer* player;
 
-    /*========== Child Components =========*/
-    // main group labels
+    /*========== CHILD COMPONENTS =========*/
+    // Main group labels
     juce::Label highShelfLabel;
     juce::Label lowShelfLabel;
-    // high shelf filter group sliders and labels
+    // High shelf filter group sliders and labels
     juce::GroupComponent highShelfSliders;
     juce::Label highFrequencyLabel;
     juce::Label highGainLabel;
@@ -52,7 +60,7 @@ private:
                                  juce::Slider::TextBoxAbove };
     juce::Slider highQSlider{ juce::Slider::LinearVertical, 
                               juce::Slider::TextBoxAbove };
-    // low shelf filter group sliders and labels
+    // Low shelf filter group sliders and labels
     juce::GroupComponent lowShelfSliders;
     juce::Label lowFrequencyLabel;
     juce::Label lowGainLabel;

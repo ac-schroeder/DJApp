@@ -79,7 +79,7 @@ private:
     // Custom look and feel 
     MainLookAndFeel mainLookAndFeel;
 
-    /*========== Child Components =========*/
+    /*========== CHILD COMPONENTS =========*/
     // Deck title
     juce::Label trackTitle;                 
     // Start/stop/pause button block

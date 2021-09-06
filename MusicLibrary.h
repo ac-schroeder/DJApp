@@ -70,7 +70,8 @@ private:
     int trackIDCount{ 0 };
 
     // Local file object to store library CSV data
-    juce::File tracksFile;
+    juce::File tracksFile{ juce::File::getCurrentWorkingDirectory().getFullPathName() 
+        + "\\libraryTracks.csv" };
 
     // An audio player to read meta info about tracks
     DJAudioPlayer sourceReader;

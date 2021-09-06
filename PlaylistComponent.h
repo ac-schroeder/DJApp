@@ -87,7 +87,7 @@ private:
     // Custom look and feel
     MainLookAndFeel mainLookAndFeel;
 
-    /*========== Child Components =========*/
+    /*========== CHILD COMPONENTS =========*/
     // Top bar components
     juce::TextButton addTrackButton{ "Add Track" };
     juce::TextButton clearPlaylistButton{ "Clear Playlist" };

@@ -14,13 +14,13 @@
 //==============================================================================
 WaveformDisplay::WaveformDisplay(juce::AudioFormatManager& formatManagerToUse,
     juce::AudioThumbnailCache& cacheToUse)
-    : audioThumb{               // audioThumbnail object
-        1000,                       // sourceSamplesPerThumbnailSample: image resolution
-        formatManagerToUse,         // AudioFormatManager object: to read file to the audioThumbnail
-        cacheToUse },                // AudioThumbnailCache object: to store/share data for all thumbs
-        fileLoaded{ false }       // file is not loaded yet
+    : audioThumb {           
+        1000,                   // image resolution
+        formatManagerToUse,     // shared audio format manager 
+        cacheToUse },           // shared AudioThumbnailCache 
+      fileLoaded { false }    
 {
-    // register change listener
+    // Register change listener
     audioThumb.addChangeListener(this);
 }
 
@@ -30,28 +30,33 @@ WaveformDisplay::~WaveformDisplay()
 
 void WaveformDisplay::paint(juce::Graphics& g)
 {
-    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));   // clear the background
+    // Clear the background
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 
+    // Draw an outline around the component
     g.setColour(juce::Colours::grey);
-    g.drawRect(getLocalBounds(), 1);   // draw an outline around the component
+    g.drawRect(getLocalBounds(), 1);   
 
+    // Set draw colour to orange
     g.setColour(juce::Colours::orange);
 
+    // Draw the waveform only if file is loaded to the deck
     if (fileLoaded)
     {
-        // draw waveform
+        // Draw the waveform
         audioThumb.drawChannel(g, getLocalBounds(),
             0, audioThumb.getTotalLength(),
             0, 1.0f);
-        // draw playhead indicator
+
+        // Draw the playhead indicator
         g.setColour(juce::Colours::lightgreen);
-        juce::Rectangle<int> playheadBar(relativePosition * getWidth(), 0, 4, getHeight());
+        juce::Rectangle<int> playheadBar(relativePosition * getWidth(), 
+                                         0, 4, getHeight());
         g.fillRect(playheadBar);
-        //g.drawRect(position * getWidth(), 0, 6, getHeight());
     }
     else
     {
-        // draw some placeholder text
+        // Draw placeholder text
         g.setFont(20.0f);
         g.drawText("File not loaded...", getLocalBounds(),
             juce::Justification::centred, true);
@@ -62,7 +67,7 @@ void WaveformDisplay::resized()
 {
 }
 
-/** Implement ChangeListener */
+// Called whenever the audio thumbnail broadcasts changes
 void WaveformDisplay::changeListenerCallback(juce::ChangeBroadcaster* source)
 {
     repaint();
@@ -70,19 +75,21 @@ void WaveformDisplay::changeListenerCallback(juce::ChangeBroadcaster* source)
 
 void WaveformDisplay::loadURL(juce::URL audioURL)
 {
-    // clear previous drawings
+    // Clear previous drawings
     audioThumb.clear();
-    // set the audioURL as the input source for the audio thumbnail
+
+    // Set the audioURL as the input source for the audio thumbnail
     fileLoaded = audioThumb.setSource(new juce::URLInputSource(audioURL));
-    // TODO: Throw exception if file could not load (!fileLoaded)
 }
 
 void WaveformDisplay::setPositionRelative(double  _relativePosition)
 {
-    // only change position if it's changed
+    // Only change if there is change to show
     if (_relativePosition != relativePosition)
     {
+        // Update the relative position
         relativePosition = _relativePosition;
+        // Redraw the waveform
         repaint();
     }
 }
