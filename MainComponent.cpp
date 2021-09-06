@@ -4,8 +4,8 @@
 //==============================================================================
 MainComponent::MainComponent()
 {
-    // set size
-    setSize (1000, 800);
+    // Set fixed size - app is non-resizable (see main)
+    setSize (900, 700);
 
     // Some platforms require permissions to open input channels so request that here
     if (juce::RuntimePermissions::isRequired (juce::RuntimePermissions::recordAudio)
@@ -20,48 +20,47 @@ MainComponent::MainComponent()
         setAudioChannels (0, 2);
     }
 
-    // draw the deck GUI components
-    addAndMakeVisible(deckGUI1);
-    addAndMakeVisible(deckGUI2);
+    // Add components
+    addAndMakeVisible(deckGUI1);            // left deck
+    addAndMakeVisible(deckGUI2);            // right deck
+    addAndMakeVisible(playlistComponent);   // playlist 
 
-    // draw the playlist component
-    addAndMakeVisible(playlistComponent);
-
-    // register basic formats for the app's formatManager
+    // Register basic formats in the formatManager
     formatManager.registerBasicFormats();
 }
 
 MainComponent::~MainComponent()
 {
-    // This shuts down the audio device and clears the audio source.
+    // Shut down the audio device and clears the audio source
     shutdownAudio();
 }
 
 //==============================================================================
 void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
 {
-    // set up player audio sources
+    // Set up player audio sources
     player1.prepareToPlay(samplesPerBlockExpected, sampleRate);
     player2.prepareToPlay(samplesPerBlockExpected, sampleRate);
 
-    // set up mixer audio source
+    // Set up mixer audio source
     mixerSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
 
-    // add both players to the mixer audio source
+    // Add both players to the mixer audio source
     mixerSource.addInputSource(&player1, false);
     mixerSource.addInputSource(&player2, false);
 }
 
 void MainComponent::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
-    // mixer source will manage each audio block
+    // Mixer source will manage each audio block
     mixerSource.getNextAudioBlock(bufferToFill);
 }
 
 
 void MainComponent::releaseResources()
 {
-    mixerSource.removeAllInputs(); // TODO: what does this do, and do I need it?
+    // Clear player resources
+    mixerSource.removeAllInputs(); 
     mixerSource.releaseResources();
     player1.releaseResources();
     player2.releaseResources();
@@ -70,18 +69,18 @@ void MainComponent::releaseResources()
 //==============================================================================
 void MainComponent::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
+    // Set background colour
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 }
 
 void MainComponent::resized()
 {
-    // set bounds on deck GUI components
+    // Set bounds on deck GUI components
     int deckHeight = getHeight() * 0.65;
     deckGUI1.setBounds(0, 0, getWidth()/2, deckHeight);
     deckGUI2.setBounds(getWidth() / 2, 0, getWidth() / 2, deckHeight);
 
-    // set bounds on playlist component
+    // Set bounds on playlist component
     playlistComponent.setBounds(0, deckHeight, getWidth(), getHeight() - deckHeight);
 }
 

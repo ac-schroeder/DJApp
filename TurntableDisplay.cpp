@@ -3,13 +3,13 @@
 
     TurntableDisplay.cpp
     Created: 25 Aug 2021 3:29:58pm
-    Author:  alana
+    Author:  Alana Schroeder
 
   ==============================================================================
 */
 
-#include <JuceHeader.h>
 #include <cmath>
+#include <JuceHeader.h>
 #include "TurntableDisplay.h"
 
 //==============================================================================
@@ -106,19 +106,19 @@ void TurntableDisplay::resized()
     updateNeedlePosition();
 }
 
-void TurntableDisplay::setPositionRelative(double _position)
+void TurntableDisplay::setPositionRelative(double _relativePosition)
 {
     // only change position if it's changed
-    if (_position != position)
+    if (_relativePosition != relativePosition)
     {
-        position = _position;
+        relativePosition = _relativePosition;
         repaint();
     }
 }
 
 void TurntableDisplay::updateNeedlePosition()
 {
-    float needleAngle = startPositionAngle + (rotationRange * position);
+    float needleAngle = startPositionAngle + (rotationRange * relativePosition);
     float elbowAngle = needleAngle - (11 * (juce::MathConstants<float>::pi / 180));
     toneArmNeedle = toneArmBase.getPointOnCircumference(toneArmDistance, needleAngle);
     toneArmElbow = toneArmBase.getPointOnCircumference(toneArmDistance * 0.63, elbowAngle);

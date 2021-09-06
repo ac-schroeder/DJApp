@@ -3,7 +3,7 @@
 
     FrequencyShelfFilter.cpp
     Created: 1 Sep 2021 9:43:48am
-    Author:  alana
+    Author:  Alana Schroeder
 
   ==============================================================================
 */

@@ -3,12 +3,13 @@
 
     MusicTrack.h
     Created: 20 Aug 2021 8:58:44am
-    Author:  alana
+    Author:  Alana Schroeder
 
   ==============================================================================
 */
 
 #pragma once
+
 #include <JuceHeader.h>
 
 class MusicTrack

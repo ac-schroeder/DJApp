@@ -3,7 +3,7 @@
 
     TurntableDisplay.h
     Created: 25 Aug 2021 3:29:58pm
-    Author:  alana
+    Author:  Alana Schroeder
 
   ==============================================================================
 */
@@ -19,30 +19,48 @@
 class TurntableDisplay  : public juce::Component
 {
 public:
+    /** Constructor */
     TurntableDisplay();
+    /** Destructor */
     ~TurntableDisplay() override;
 
+    /** Implements Component: Paints the component. */
     void paint (juce::Graphics&) override;
+    /** Implements Component: Repaints the component on resize. */
     void resized() override;
 
-    void setPositionRelative(double _position);
+    /** 
+     * Sets the relative position of the turntable's tonearm and repaints. 
+     * This is called by DeckGUI::timerCallback() to sync the turntable display 
+     * with the audio playback.
+     *
+     * @param _relativePosition - The position of the playhead as a percentage of 
+     *     the track length.
+     */
+    void setPositionRelative(double _relativePosition);
+
+    /** 
+     * Updates the coordinates of the toneArmNeedle. Called in paint() 
+     * and resized(). Repainting is done whenever setPositionRelative() is called
+     * by the DeckGUI::timerCallback function.
+     */
     void updateNeedlePosition();
 
 private:
-    // the relative position of the playhead
-    double position{0};
+    // The relative position of the playhead as a percentage of track length
+    double relativePosition{0};
 
-    // layout variables
+    // Layout variables
     float componentSize{};
     float margin{};
 
-    // turntable dimensions
+    // Turntable dimensions
     float turntableRadius{};        // to outer circle edge of turntable
     float turntableInnerRadius{};   // to inner circle edge of turntable
     float toneArmBaseRadius{};      // to outer edge of tone arm base
     float toneArmDistance{};        // straight distance from tone arm base to needle
 
-    // turntable coordinate points
+    // Turntable coordinate points
     juce::Point<float> turntableCentre{};   // center of the turntable
     juce::Point<float> toneArmBase{};       // center of the tone arm base
     juce::Point<float> toneArmElbow{};      // elbow of the tone arm
@@ -50,10 +68,10 @@ private:
     juce::Point<float> needleTrackStart{};  // starting point of the needle track
     juce::Point<float> needleTrackEnd{};    // end point of the needle track
 
-    // degrees clockwise from top of the turntable for the needle to track
+    // Degrees clockwise from top of the turntable for the needle to track
     float needleTrackAngle{125};  
 
-    // tone arm angles
+    // Tone arm angles
     float startPositionAngle{};   // angle from toneArmBase to needleTrackStart
     float endPositionAngle{};     // angle from toneArmBase to needleTrackEnd
     float rotationRange{};        // degrees rotation range of the tone arm from start to end 

@@ -3,7 +3,7 @@
 
     WaveformDisplay.cpp
     Created: 5 Aug 2021 1:33:56pm
-    Author:  alana
+    Author:  Alana Schroeder
 
   ==============================================================================
 */
@@ -13,12 +13,12 @@
 
 //==============================================================================
 WaveformDisplay::WaveformDisplay(juce::AudioFormatManager& formatManagerToUse,
-                                 juce::AudioThumbnailCache& cacheToUse)
+    juce::AudioThumbnailCache& cacheToUse)
     : audioThumb{               // audioThumbnail object
         1000,                       // sourceSamplesPerThumbnailSample: image resolution
         formatManagerToUse,         // AudioFormatManager object: to read file to the audioThumbnail
-        cacheToUse},                // AudioThumbnailCache object: to store/share data for all thumbs
-      fileLoaded{ false }       // file is not loaded yet
+        cacheToUse },                // AudioThumbnailCache object: to store/share data for all thumbs
+        fileLoaded{ false }       // file is not loaded yet
 {
     // register change listener
     audioThumb.addChangeListener(this);
@@ -28,24 +28,24 @@ WaveformDisplay::~WaveformDisplay()
 {
 }
 
-void WaveformDisplay::paint (juce::Graphics& g)
+void WaveformDisplay::paint(juce::Graphics& g)
 {
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));   // clear the background
 
-    g.setColour (juce::Colours::grey);
-    g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
+    g.setColour(juce::Colours::grey);
+    g.drawRect(getLocalBounds(), 1);   // draw an outline around the component
 
-    g.setColour (juce::Colours::orange);
+    g.setColour(juce::Colours::orange);
 
     if (fileLoaded)
     {
         // draw waveform
-        audioThumb.drawChannel(g, getLocalBounds(), 
-                               0, audioThumb.getTotalLength(),
-                               0, 1.0f);
+        audioThumb.drawChannel(g, getLocalBounds(),
+            0, audioThumb.getTotalLength(),
+            0, 1.0f);
         // draw playhead indicator
         g.setColour(juce::Colours::lightgreen);
-        juce::Rectangle<int> playheadBar (position * getWidth(), 0, 4, getHeight());
+        juce::Rectangle<int> playheadBar(relativePosition * getWidth(), 0, 4, getHeight());
         g.fillRect(playheadBar);
         //g.drawRect(position * getWidth(), 0, 6, getHeight());
     }
@@ -54,7 +54,7 @@ void WaveformDisplay::paint (juce::Graphics& g)
         // draw some placeholder text
         g.setFont(20.0f);
         g.drawText("File not loaded...", getLocalBounds(),
-            juce::Justification::centred, true);   
+            juce::Justification::centred, true);
     }
 }
 
@@ -77,12 +77,12 @@ void WaveformDisplay::loadURL(juce::URL audioURL)
     // TODO: Throw exception if file could not load (!fileLoaded)
 }
 
-void WaveformDisplay::setPositionRelative(double _position)
+void WaveformDisplay::setPositionRelative(double  _relativePosition)
 {
     // only change position if it's changed
-    if (_position != position)
+    if (_relativePosition != relativePosition)
     {
-        position = _position;
+        relativePosition = _relativePosition;
         repaint();
     }
 }

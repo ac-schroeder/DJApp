@@ -3,7 +3,7 @@
 
     DeckGUI.cpp
     Created: 3 Aug 2021 12:57:58pm
-    Author:  alana
+    Author:  Alana Schroeder
 
   ==============================================================================
 */
@@ -22,7 +22,6 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
 {
     // set look and feel
     setLookAndFeel(&mainLookAndFeel);
-    //getLookAndFeel().setColour(juce::Slider::thumbColourId, juce::Colours::orange);
 
     // set default text for track title
     trackTitle.setColour(juce::Label::ColourIds::textColourId, juce::Colours::orange);
@@ -174,7 +173,7 @@ void DeckGUI::resized()
     // playback control sliders
     auto playbackSliderHeight = playbackControlsArea.getHeight() / 2;
     auto playbackLabelWidth = 50;
-    auto playbackSliderMargin = 15;
+    auto playbackSliderMargin = 10;
 
     auto speedSliderArea = playbackControlsArea.removeFromTop(playbackSliderHeight);
     auto positionSliderArea = playbackControlsArea.removeFromTop(playbackSliderHeight);

@@ -3,7 +3,7 @@
 
     PlaylistComponent.cpp
     Created: 10 Aug 2021 1:41:53pm
-    Author:  alana
+    Author:  Alana Schroeder
 
   ==============================================================================
 */
@@ -28,11 +28,11 @@ PlaylistComponent::PlaylistComponent(juce::AudioFormatManager& _formatManager,
     // set the table component's data model
     tableComponent.setModel(this);
     // create headers for the table
-    tableComponent.getHeader().addColumn("File Name", 1, 400);
-    tableComponent.getHeader().addColumn("Track Length", 2, 180);
-    tableComponent.getHeader().addColumn("", 3, 160);
-    tableComponent.getHeader().addColumn("", 4, 160);
-    tableComponent.getHeader().addColumn("", 5, 100);
+    tableComponent.getHeader().addColumn("File Name", 1, 330);
+    tableComponent.getHeader().addColumn("Track Length", 2, 160);
+    tableComponent.getHeader().addColumn("", 3, 150);
+    tableComponent.getHeader().addColumn("", 4, 150);
+    tableComponent.getHeader().addColumn("", 5, 110);
 
     // make components visible
     addAndMakeVisible(addTrackButton);
@@ -365,27 +365,7 @@ void PlaylistComponent::textEditorReturnKeyPressed(juce::TextEditor& textEditor)
     }
     // search for the entered term
     else
-    {
-        // try to find a track in the library to match the search input
-        //MusicTrack* track = musicLibrary.searchLibrary(searchText);  
-        //// if a matching track was found, display results
-        //if (track != nullptr)
-        //{
-        //    DBG("A track was found! " + track->fileName);
-
-        //    // update the playlist to show the search results
-        //    shownTracks.clear(); 
-        //    shownTracks.push_back(*track);
-        //    tableComponent.updateContent();
-
-        //    // repaint to update row data in case of consecutive searches, which doesn't change the number of rows and therefore will not be updated by updateContent()
-        //    repaint();
-
-        //    // display success message
-        //    playlistMessageBox.setText("Displaying search results...",
-        //        juce::NotificationType::dontSendNotification);
-        //}
-         
+    {   
         std::vector<MusicTrack> matchedTracks = musicLibrary.searchLibrary(searchText);
         if (!matchedTracks.empty())
         {

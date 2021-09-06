@@ -3,7 +3,7 @@
 
     DeckGUI.h
     Created: 3 Aug 2021 12:57:58pm
-    Author:  alana
+    Author:  Alana Schroeder
 
   ==============================================================================
 */
@@ -27,67 +27,75 @@ class DeckGUI  : public juce::Component,
                  public juce::Timer
 {
 public:
+    /** Constructor */
     DeckGUI(DJAudioPlayer* player,
             juce::AudioFormatManager& formatManagerToUse,
             juce::AudioThumbnailCache& cacheToUse);
+    /** Destructor */
     ~DeckGUI() override;
 
+    /** Implements Component: Paints the DeckGUI component. */
     void paint (juce::Graphics&) override;
+    /** Implements Component: Repaints the DeckGUI on resize. */
     void resized() override;
 
-    /** Implement Button::Listener */
+    /** Implements Button::Listener: Processes button clicks. */
     void buttonClicked(juce::Button* button) override;
 
-    /** Implement Slider::Listener */
+    /** Implement Slider::Listener: Processes slider value changes. */
     void sliderValueChanged(juce::Slider* slider) override;
 
-    /** Implement FileDragAndDrop */
+    /** Implements FileDragAndDrop: Registers when files are being dragged. */
     bool isInterestedInFileDrag(const juce::StringArray& files) override;
+    /** Implements FileDragAndDrop: Processes files dropped into the component. */
     void filesDropped(const juce::StringArray& files, int x, int y) override;
 
-    /** Implement Timer */
+    /** 
+     * Implements Timer. Processes the timer callback to update the display 
+     * on Waveform and Turntable components.
+     */
     void timerCallback() override;
 
-    /** Loads an audio URL to the deck's player */
+    /** 
+     * Loads an audio URL to the deck's player. 
+     *
+     * @param audioURL - The URL of the audio file being loaded.
+     * @param fileName - The file name of the audio file being loaded.
+     */
     void loadURL(juce::URL audioURL, juce::String fileName);
 
 private:
-    // custom look and feel 
-    MainLookAndFeel mainLookAndFeel;
-
-    // pointer to audio player
+    // Pointer to the audio player for the deck
     DJAudioPlayer* player;
 
-    // header component to display track title
-    juce::Label trackTitle;
+    // Custom look and feel 
+    MainLookAndFeel mainLookAndFeel;
 
-    // start, stop, and play button block
+    /*========== Child Components =========*/
+    // Deck title
+    juce::Label trackTitle;                 
+    // Start/stop/pause button block
     juce::GroupComponent startStopControls;
     juce::ImageButton playButton;
     juce::ImageButton pauseButton;
     juce::ImageButton stopButton;
-
-    // volume slider component
+    // Volume slider component block
     juce::GroupComponent volumeControls;
     juce::Slider volumeSlider{ juce::Slider::SliderStyle::LinearHorizontal,
                                juce::Slider::TextEntryBoxPosition::NoTextBox };
     juce::Label volumeSliderLabel;
-
-    // turntable display component
+    // Turntable display 
     TurntableDisplay turntableDisplay;
-
-    // frequency shelf manipulation sliders block
+    // Frequency shelf sliders block
     juce::GroupComponent frequencyControls;
     FrequencyShelfFilter frequencyShelfFilter{ player };
-
-    // playback manipulation sliders block
+    // Playback manipulation sliders block
     juce::GroupComponent playbackControls;
     juce::Slider speedSlider;
     juce::Label speedSliderLabel;
     juce::Slider positionSlider;
     juce::Label positionSliderLabel;
-
-    // waveform display component
+    // Waveform display component
     WaveformDisplay waveformDisplay;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DeckGUI)

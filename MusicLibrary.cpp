@@ -3,7 +3,7 @@
 
     MusicLibrary.cpp
     Created: 19 Aug 2021 10:40:26am
-    Author:  alana
+    Author:  Alana Schroeder
 
   ==============================================================================
 */
@@ -103,23 +103,6 @@ void MusicLibrary::clearLibrary()
     libraryTracks.clear();
 }
 
-// Returns a pointer to the matching track if a match is found, or else nullptr
-// Design based on https://stackoverflow.com/questions/2639255/return-a-null-object-if-search-result-not-found
-//MusicTrack* MusicLibrary::searchLibrary(juce::String keyword)
-//{
-//    // create a null pointer to return as default, for if no tracks found
-//    MusicTrack* matchedTrack{ nullptr };
-//    // loop over library tracks to find matching track
-//    for (MusicTrack& track : libraryTracks)
-//    {
-//        if (track.fileName == keyword)
-//        {
-//            matchedTrack = &track; // reassign the pointer to the track
-//            DBG("The matched track exists! track.filename is " + track.fileName);
-//        }
-//    }
-//    return matchedTrack;
-//}
 
 std::vector<MusicTrack> MusicLibrary::searchLibrary(juce::String& keyword)
 {

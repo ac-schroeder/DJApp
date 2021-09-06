@@ -3,7 +3,7 @@
 
     DJAudioPlayer.cpp
     Created: 2 Aug 2021 2:28:49pm
-    Author:  alana
+    Author:  Alana Schroeder
 
   ==============================================================================
 */
@@ -38,12 +38,6 @@ void DJAudioPlayer::releaseResources()
     // release resources for both source objects
     transportSource.releaseResources();
     resampleSource.releaseResources();
-}
-
-// TODO: Take this out! Unless?
-juce::AudioTransportSource* DJAudioPlayer::getTransportSource()
-{
-    return &transportSource;
 }
 
 void DJAudioPlayer::loadURL(juce::URL audioURL)
@@ -85,7 +79,7 @@ void DJAudioPlayer::setSpeed(double ratio)
 {
     if (ratio < 0 || ratio > 2.0)
     {
-        DBG("DJAudioPlayer::setSpeed: ratio should be between 0 and  100");
+        DBG("DJAudioPlayer::setSpeed: ratio should be between 0 and 2");
     }
     else
     {
@@ -93,22 +87,35 @@ void DJAudioPlayer::setSpeed(double ratio)
     }
 }
 
-void DJAudioPlayer::setPosition(double posInSecs)
+void DJAudioPlayer::setPosition(double positionInSeconds)
 {
-    transportSource.setPosition(posInSecs);
+    transportSource.setPosition(positionInSeconds);
 }
 
-void DJAudioPlayer::setPositionRelative(double pos)
+void DJAudioPlayer::setPositionRelative(double relativePosition)
 {
-    if (pos < 0 || pos > 100.0)
+    if (relativePosition < 0 || relativePosition > 100.0)
     {
         DBG("DJAudioPlayer::setPositionRelative: position should be between 0 and  100");
     }
     else
     {
-        double posInSecs = transportSource.getLengthInSeconds() * (pos / 100);
-        setPosition(posInSecs);
+        double positionInSeconds = transportSource.getLengthInSeconds() 
+                                   * (relativePosition / 100);
+        setPosition(positionInSeconds);
     }
+}
+
+void DJAudioPlayer::setLowShelf(double frequency, float gain, double q)
+{
+    lowShelfCoefficients = juce::IIRCoefficients::makeLowShelf(sampleRate, frequency, q, gain);
+    lowShelfFilteredSource.setCoefficients(lowShelfCoefficients);
+}
+
+void DJAudioPlayer::setHighShelf(double frequency, float gain, double q)
+{
+    highShelfCoefficients = juce::IIRCoefficients::makeHighShelf(sampleRate, frequency, q, gain);
+    highShelfFilteredSource.setCoefficients(highShelfCoefficients);
 }
 
 void DJAudioPlayer::start()
@@ -137,17 +144,7 @@ double DJAudioPlayer::getPositionRelative()
     return position;
 }
 
-void DJAudioPlayer::setLowShelf(double frequency, float gain, double q)
-{
-    lowShelfCoefficients = juce::IIRCoefficients::makeLowShelf(sampleRate, frequency, q, gain);
-    lowShelfFilteredSource.setCoefficients(lowShelfCoefficients);
-}
 
-void DJAudioPlayer::setHighShelf(double frequency, float gain, double q)
-{
-    highShelfCoefficients = juce::IIRCoefficients::makeHighShelf(sampleRate, frequency, q, gain);
-    highShelfFilteredSource.setCoefficients(highShelfCoefficients);
-}
 
 /** get the track length */
 std::string DJAudioPlayer::getTrackLength()

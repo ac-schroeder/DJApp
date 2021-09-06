@@ -6,19 +6,15 @@
 #include "PlaylistComponent.h"
 
 //==============================================================================
-/*
-    This component lives inside our window, and this is where you should put all
-    your controls and content.
-*/
 class MainComponent  : public juce::AudioAppComponent
 {
 public:
-    //==============================================================================
+    //============================================================================== 
     MainComponent();
     ~MainComponent() override;
 
     //==============================================================================#
-    // Implement AudioAppComponent
+    // Implement AudioAppComponent 
     void prepareToPlay (int samplesPerBlockExpected, double sampleRate) override;
     void getNextAudioBlock (const juce::AudioSourceChannelInfo& bufferToFill) override;
     void releaseResources() override;
@@ -30,25 +26,23 @@ public:
 
 private:
     //==============================================================================
-    // shared AudioFormatManager for all audio players and thumbnails
+    // Shared AudioFormatManager for all audio players and thumbnails
     juce::AudioFormatManager formatManager;
-    // shared AudioThumbnailCache for all deck waveform AudioThumbnail objects
+    // Shared AudioThumbnailCache for all deck waveform AudioThumbnail objects
     juce::AudioThumbnailCache thumbCache{ 100 };
 
-    // audio source players
+    // Audio source players
     DJAudioPlayer player1{ formatManager };
     DJAudioPlayer player2{ formatManager };
 
-    // mixer audio source to handle combination of players
+    // Mixer audio source to handle combination of deck players
     juce::MixerAudioSource mixerSource;
 
-    // deck GUI components
-    // get the address of the players to assign to pointers in the objects.
-    // pass them the shared format manager and waveform thumbnail cache.
+    // Deck GUI components
     DeckGUI deckGUI1{ &player1, formatManager, thumbCache };
     DeckGUI deckGUI2{ &player2, formatManager, thumbCache };
 
-    // track playlist component to display under the deck GUIs
+    // Track playlist component to display under the deck GUIs
     PlaylistComponent playlistComponent{ formatManager, &deckGUI1, &deckGUI2 };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)

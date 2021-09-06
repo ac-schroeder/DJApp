@@ -3,7 +3,7 @@
 
     WaveformDisplay.h
     Created: 5 Aug 2021 1:33:56pm
-    Author:  alana
+    Author:  Alana Schroeder
 
   ==============================================================================
 */
@@ -15,34 +15,51 @@
 //==============================================================================
 /*
 */
-class WaveformDisplay  : public juce::Component,
-                         public juce::ChangeListener
+class WaveformDisplay : public juce::Component,
+                        public juce::ChangeListener
 {
 public:
+    /** Constructor */
     WaveformDisplay(juce::AudioFormatManager& formatManagerToUse,
-                    juce::AudioThumbnailCache& cacheToUse);
+        juce::AudioThumbnailCache& cacheToUse);
+    /** Destructor */
     ~WaveformDisplay() override;
 
-    /** Implement Component */
-    void paint (juce::Graphics&) override;
+    /** Implements Component: Paints the component. */
+    void paint(juce::Graphics&) override;
+    /** Implements Component: Repaints the component on resize. */
     void resized() override;
 
-    /** Implement ChangeListener: Detect broadcasts from AudioThumbnail in order to update the waveform display */
+    /** 
+     * Implements ChangeListener: Detects broadcasts from AudioThumbnail 
+     * in order to update the waveform display. 
+     */
     void changeListenerCallback(juce::ChangeBroadcaster* source) override;
 
-    /** Load the audio file by setting as source for the AudioThumbnail */
+    /** 
+     * Loads the audio file by setting it as source for the AudioThumbnail.
+     *
+     * @param audioURL - The URL of the audio file to display.
+     */
     void loadURL(juce::URL audioURL);
 
-    /** Set the relative position of the playhead */
-    void setPositionRelative(double _position);
+    /** 
+     * Sets the relative position of the playhead, as a percentage of track length. 
+     * This is called by DeckGUI::timerCallback() to sync the waveform display
+     * with the audio playback.
+     *
+     * @param _relativePosition - The position of the playhead as a percentage of
+     *     the track length.
+     */
+    void setPositionRelative(double  _relativePosition);
 
 private:
-    // audio thumbnail for displaying waveform
+    // Audio thumbnail for displaying waveform
     juce::AudioThumbnail audioThumb;
-    // flag to decide whether to paint the waveform to the component
+    // Flag to decide whether to paint the waveform to the component
     bool fileLoaded;
-    // playhead position
-    double position{ 0 };
+    // Playhead relative position
+    double relativePosition{ 0 };
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveformDisplay)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(WaveformDisplay)
 };

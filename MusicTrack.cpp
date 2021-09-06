@@ -3,7 +3,7 @@
 
     MusicTrack.cpp
     Created: 20 Aug 2021 8:58:44am
-    Author:  alana
+    Author:  Alana Schroeder
 
   ==============================================================================
 */
