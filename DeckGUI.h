@@ -65,8 +65,16 @@ public:
     void loadURL(juce::URL audioURL, juce::String fileName);
 
 private:
+    /** Loads images for GUI buttons. */
+    void setUpButtonImages(juce::File _buttonImageDirectory );
+    /** Initializes slider ranges, values, and label texts */
+    void setUpSliders();
+
     // Pointer to the audio player for the deck
     DJAudioPlayer* player;
+
+    // Location of images for GUI buttons
+    juce::File buttonImageDirectory{ juce::File::getCurrentWorkingDirectory() };
 
     // Custom look and feel 
     MainLookAndFeel mainLookAndFeel;

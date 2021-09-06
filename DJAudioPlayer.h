@@ -118,5 +118,5 @@ private:
     juce::IIRCoefficients highShelfCoefficients;
 
     // The audio source's sample rate
-    double sampleRate;
+    double sampleRate { 0 };
 };

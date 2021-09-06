@@ -15,42 +15,22 @@
 DeckGUI::DeckGUI(DJAudioPlayer* _player,
                  juce::AudioFormatManager& formatManagerToUse,
                  juce::AudioThumbnailCache& cacheToUse) 
-    : player{ _player },
-      waveformDisplay{          // WaveformDisplay component
-        formatManagerToUse,       // AudioFormatManager: to send to AudioThumbnail
-        cacheToUse}               // AudioThumbnailCache: to send to AudioThumbnail
+    : player { _player },
+      waveformDisplay {          
+        formatManagerToUse,   // AudioFormatManager: to pass to AudioThumbnail
+        cacheToUse }          // AudioThumbnailCache: to pass to AudioThumbnail
 {
-    // set look and feel
+    // Set custom look and feel
     setLookAndFeel(&mainLookAndFeel);
 
-    // set default text for track title
+    // Set default text for track title
     trackTitle.setColour(juce::Label::ColourIds::textColourId, juce::Colours::orange);
     trackTitle.setText("Load a track below to get started...", juce::NotificationType::dontSendNotification);
 
-    // load button images
-    juce::File playButtonImageFile = juce::File::getCurrentWorkingDirectory().getChildFile("play.png");
-    juce::File pauseButtonImageFile = juce::File::getCurrentWorkingDirectory().getChildFile("pause.png");
-    juce::File stopButtonImageFile = juce::File::getCurrentWorkingDirectory().getChildFile("stop.png");
+    // Load button images
+    setUpButtonImages(buttonImageDirectory);
 
-    juce::Image playButtonImage = juce::ImageFileFormat::loadFrom(playButtonImageFile);
-    juce::Image pauseButtonImage = juce::ImageFileFormat::loadFrom(pauseButtonImageFile);
-    juce::Image stopButtonImage = juce::ImageFileFormat::loadFrom(stopButtonImageFile);
-    juce::Image nullImage{};
-
-    playButton.setImages(true, true, true, 
-                         playButtonImage, 1, juce::Colours::transparentWhite, 
-                         nullImage, 0, juce::Colours::orange,
-                         nullImage, 0, juce::Colours::orange);
-    pauseButton.setImages(true, true, true,
-                         pauseButtonImage, 1, juce::Colours::transparentWhite,
-                         nullImage, 0, juce::Colours::orange,
-                         nullImage, 0, juce::Colours::orange);
-    stopButton.setImages(true, true, true,
-                         stopButtonImage, 1, juce::Colours::transparentWhite,
-                         nullImage, 0, juce::Colours::orange,
-                         nullImage, 0, juce::Colours::orange);
-
-    // add components
+    // Add components
     addAndMakeVisible(trackTitle);
     addAndMakeVisible(startStopControls);
     addAndMakeVisible(playButton);
@@ -69,7 +49,10 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     addAndMakeVisible(positionSliderLabel);
     addAndMakeVisible(waveformDisplay);
 
-    // add listeners
+    // Set up slider ranges, values, and labels
+    setUpSliders();
+
+    // Add listeners
     playButton.addListener(this);
     pauseButton.addListener(this);
     stopButton.addListener(this);
@@ -77,46 +60,25 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
     speedSlider.addListener(this);
     positionSlider.addListener(this);
 
-    // attach slider labels
-    volumeSliderLabel.setText("Volume", juce::dontSendNotification);
-    volumeSliderLabel.attachToComponent(&volumeSlider, true);
-    speedSliderLabel.setText("Speed", juce::dontSendNotification);
-    speedSliderLabel.attachToComponent(&speedSlider, true);
-    positionSliderLabel.setText("Position", juce::dontSendNotification);
-    positionSliderLabel.attachToComponent(&positionSlider, true);
-
-    // format slider text boxes
-    speedSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 
-                                50, speedSlider.getTextBoxHeight());
-    positionSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false, 
-                                50, positionSlider.getTextBoxHeight());
-        
-    // restrict slider ranges
-    volumeSlider.setRange(0.0, 1.0);
-    speedSlider.setRange(0.0, 2.0, 0.01);
-    positionSlider.setRange(0.0, 100.0, 0.01);
-
-    // set initial slider values
-    volumeSlider.setValue(1.0, juce::dontSendNotification);
-    speedSlider.setValue(1.0, juce::dontSendNotification);
-    positionSlider.setValue(0, juce::dontSendNotification);
-
-    // start the timer to coordinate audio playback with waveform and turntable displays
+    // Start the timer to coordinate audio playback with waveform and turntable displays
     startTimer(100);
 }
 
 DeckGUI::~DeckGUI()
 {
+    // Stop the timer from continuing
     stopTimer();
+    // Remove this component's look and feel
     setLookAndFeel(nullptr);
 }
 
 void DeckGUI::paint (juce::Graphics& g)
 {
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
-
+    // Clear the background
+    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   
+    // Draw an outline around the component
     g.setColour (juce::Colours::grey);
-    g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
+    g.drawRect (getLocalBounds(), 1);   
 
 }
 
@@ -126,51 +88,45 @@ void DeckGUI::resized()
 
     /*==== Block Section Bounds ====*/
 
-    // header section
+    // Header section
     trackTitle.setBounds(area.removeFromTop(36));
-
-    // waveform display section
+    // Waveform display section
     waveformDisplay.setBounds(area.removeFromBottom(area.getHeight() / 5));
-
-    // playback controls section
+    // Playback controls section
     auto playbackControlsArea = area.removeFromBottom(area.getHeight() / 4);
     playbackControls.setBounds(playbackControlsArea);
-
-    // frequency controls section
+    // Frequency controls section
     auto frequencyControlsArea = area.removeFromRight(area.getWidth() * 0.6);
     frequencyControls.setBounds(frequencyControlsArea);
-
-    // start-stop controls section
+    // Start-stop controls section
     auto startStopControlsArea = area.removeFromTop(area.getHeight() * 0.2);
     startStopControls.setBounds(startStopControlsArea);
-
-    // volume slider
+    // Volume slider
     auto volumeControlsArea = area.removeFromTop(area.getHeight() / 6);
     volumeControls.setBounds(volumeControlsArea);
-
-    // turntable display - set to be square and centered horizontally
+    // Turntable display - set to be square and centered horizontally
     auto turntableDimension = juce::jmin(area.getHeight(), area.getWidth());
     auto turntableX = area.getX() + ((area.getWidth() - turntableDimension) / 2);
     turntableDisplay.setBounds(turntableX, area.getY(), turntableDimension, turntableDimension);
 
-    /*=== Section Subcomponent Bounds ===*/
+    /*=== Block Section Sub-component Bounds ===*/
 
-    // start-stop buttons
+    // Start-stop buttons
     auto startStopButtonWidth = startStopControlsArea.getWidth() / 3;
     auto startStopButtonMargin = 10;
     playButton.setBounds(startStopControlsArea.removeFromLeft(startStopButtonWidth).reduced(startStopButtonMargin));
     pauseButton.setBounds(startStopControlsArea.removeFromLeft(startStopButtonWidth).reduced(startStopButtonMargin));
     stopButton.setBounds(startStopControlsArea.removeFromLeft(startStopButtonWidth).reduced(startStopButtonMargin));
 
-    // volume controls
+    // Volume controls
     auto volumeLabelWidth = 60;
     volumeSliderLabel.setBounds(volumeControlsArea.removeFromLeft(volumeLabelWidth));
     volumeSlider.setBounds(volumeControlsArea);
 
-    // frequency control sliders
+    // Frequency control sliders
     frequencyShelfFilter.setBounds(frequencyControlsArea.reduced(5));
 
-    // playback control sliders
+    // Playback control sliders
     auto playbackSliderHeight = playbackControlsArea.getHeight() / 2;
     auto playbackLabelWidth = 50;
     auto playbackSliderMargin = 10;
@@ -185,88 +141,147 @@ void DeckGUI::resized()
     speedSlider.setBounds(speedSliderArea.reduced(playbackSliderMargin));
 }
 
-/** Implement Button::Listener */
+
 void DeckGUI::buttonClicked(juce::Button* button)
 {
-    // process responses for each button
+    // Play Button
     if (button == &playButton)
     {
-        DBG("DeckGUI::buttonClicked: Play Button was clicked");
-        // begin playing
-        player->start();
+        player->start();    // Begin playback
     }
+    // Pause Button
     if (button == &pauseButton)
     {
-        DBG("DeckGUI::buttonClicked: Pause Button was clicked");
-        // pause playing
-        player->pause();
+        player->pause();    // Pause playback
     }
+    // Stop Button
     if (button == &stopButton)
     {
-        DBG("DeckGUI::buttonClicked: Stop Button was clicked");
-        // pause playing
-        player->stop();
+        player->stop();     // Stop playback and reset playhead position
     }
 }
 
-/** Implement Slider::Listener */
+
 void DeckGUI::sliderValueChanged(juce::Slider* slider)
 {
-    // implement volume slider
+    // Volume slider
     if (slider == &volumeSlider)
     {
-        DBG("DeckGUI::sliderValueChanged: volumeSlider " + std::to_string(slider->getValue()));
+        // Set playback gain (volume) from the slider value
         player->setGain(slider->getValue());
     }
-    // implement speed effects
+    // Speed slider 
     if (slider == &speedSlider)
     {
-        DBG("DeckGUI::sliderValueChanged: speedSlider " + std::to_string(slider->getValue()));
+        // Set playback speed from the slider value
         auto speed = slider->getValue();
         if (speed != 0)
         {
             player->setSpeed(speed);
         }
     }
-    // implement position slider effects
+    // Position slider
     if (slider == &positionSlider)
     {
-        DBG("DeckGUI::sliderValueChanged: positionSlider " + std::to_string(slider->getValue()));
+        // Set playhead position based on slider value
         player->setPositionRelative(slider->getValue());
     }
 }
 
-/** Implement FileDragAndDrop */
 bool DeckGUI::isInterestedInFileDrag(const juce::StringArray& files)
 {
-    DBG("DeckGUI::isInterestedInFileDrag");
     return true;
 }
 
 void DeckGUI::filesDropped(const juce::StringArray& files, int x, int y)
 {
-    DBG("DeckGUI::filesDropped");
+    // Load files dragged into the deck GUI areas straight to the deck,
+    // ...bypassing the playlist
     if (files.size() == 1)
     {
+        // Convert the file to a URL and filename string
         juce::File file { files[0] };
         juce::String fileName = file.getFileName();
+        // Load the file
         loadURL(juce::URL(file), fileName);
     }
 }
 
+// Called at interval and coordinates playback with the waveform and
+// ...turntable displays
 void DeckGUI::timerCallback()
 {
+    // Update the relative position of the waveform display
     waveformDisplay.setPositionRelative(player->getPositionRelative());
+    // Update the relative position of the turntable display
     turntableDisplay.setPositionRelative(player->getPositionRelative());
 }
 
 
-/** Loads an audio URL to the deck's player */
 void DeckGUI::loadURL(juce::URL audioURL, juce::String fileName)
 {
+    // Load the URL with the player (audio source)
     player->loadURL(audioURL);
+    // Load the URL with the waveform display (audio thumbnail)
     waveformDisplay.loadURL(audioURL);
 
-    // set the track title in the header
+    // Set the track title for the deck
     trackTitle.setText(fileName, juce::dontSendNotification);
+}
+
+void DeckGUI::setUpButtonImages(juce::File _buttonImageDirectory)
+{
+    // Get the image files
+    juce::File playButtonImageFile = _buttonImageDirectory.getChildFile("play.png");
+    juce::File pauseButtonImageFile = _buttonImageDirectory.getChildFile("pause.png");
+    juce::File stopButtonImageFile = _buttonImageDirectory.getChildFile("stop.png");
+
+    // Convert to image objects
+    juce::Image playButtonImage = juce::ImageFileFormat::loadFrom(playButtonImageFile);
+    juce::Image pauseButtonImage = juce::ImageFileFormat::loadFrom(pauseButtonImageFile);
+    juce::Image stopButtonImage = juce::ImageFileFormat::loadFrom(stopButtonImageFile);
+
+    // Create a dummy null image object for no overlays on mouse over, mouse down
+    juce::Image nullImage{};
+
+    // Set button images
+    playButton.setImages(true, true, true,
+        playButtonImage, 1, juce::Colours::transparentWhite,
+        nullImage, 0, juce::Colours::orange,
+        nullImage, 0, juce::Colours::orange);
+    pauseButton.setImages(true, true, true,
+        pauseButtonImage, 1, juce::Colours::transparentWhite,
+        nullImage, 0, juce::Colours::orange,
+        nullImage, 0, juce::Colours::orange);
+    stopButton.setImages(true, true, true,
+        stopButtonImage, 1, juce::Colours::transparentWhite,
+        nullImage, 0, juce::Colours::orange,
+        nullImage, 0, juce::Colours::orange);
+}
+
+void DeckGUI::setUpSliders()
+{
+    // Attach slider labels
+    volumeSliderLabel.setText("Volume", juce::dontSendNotification);
+    volumeSliderLabel.attachToComponent(&volumeSlider, true);
+    speedSliderLabel.setText("Speed", juce::dontSendNotification);
+    speedSliderLabel.attachToComponent(&speedSlider, true);
+    positionSliderLabel.setText("Position", juce::dontSendNotification);
+    positionSliderLabel.attachToComponent(&positionSlider, true);
+
+    // Format slider text boxes
+    speedSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false,
+        50, speedSlider.getTextBoxHeight());
+    positionSlider.setTextBoxStyle(juce::Slider::TextBoxLeft, false,
+        50, positionSlider.getTextBoxHeight());
+
+    // Restrict slider ranges
+    volumeSlider.setRange(0.0, 1.0);
+    speedSlider.setRange(0.0, 2.0, 0.01);
+    positionSlider.setRange(0.0, 100.0, 0.01);
+
+    // Set initial slider values
+    volumeSlider.setValue(1.0, juce::dontSendNotification);
+    speedSlider.setValue(1.0, juce::dontSendNotification);
+    positionSlider.setValue(0, juce::dontSendNotification);
 }
