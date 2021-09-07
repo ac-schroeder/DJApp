@@ -144,6 +144,8 @@ void DeckGUI::loadURL(const juce::URL& audioURL, const juce::String& fileName)
 
     // Set the track title for the deck
     trackTitle.setText(fileName, juce::dontSendNotification);
+    // Reset position slider
+    positionSlider.setValue(0, juce::dontSendNotification);
 }
 
 void DeckGUI::buttonClicked(juce::Button* button)
@@ -268,7 +270,7 @@ void DeckGUI::setUpSliders()
     positionSlider.setRange(0.0, 100.0, 0.01);
 
     // Set initial slider values
-    volumeSlider.setValue(1.0, juce::dontSendNotification);
+    volumeSlider.setValue(0.7, juce::dontSendNotification);
     speedSlider.setValue(1.0, juce::dontSendNotification);
     positionSlider.setValue(0, juce::dontSendNotification);
 }

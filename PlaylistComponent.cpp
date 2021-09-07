@@ -249,22 +249,28 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
     // 'Add Track' button
     if (button == &addTrackButton)
     {
-        // Create a file chooser GUI for the user to select a file
-        juce::FileChooser chooser{ "Select a track to load..." };
+        // Create a file chooser GUI for the user to select a file 
+        chooser = std::make_unique<juce::FileChooser> ("Select a track to load...", juce::File::getSpecialLocation(juce::File::userHomeDirectory));
+
+        // Set file chooser flags
+        auto folderChooserFlags = juce::FileBrowserComponent::openMode |
+            juce::FileBrowserComponent::canSelectFiles;
+
         // If the user selects a file to open, load the file
-        if (chooser.browseForFileToOpen())
-        {
-            // Clear any active search, so full library can be seen
-            clearSearch();
+        chooser->launchAsync(folderChooserFlags,
+            [this](const juce::FileChooser& chooser) {
+                // Clear any active search, so full library can be seen
+                clearSearch();
 
-            // Convert the chosen file to a URL and load it
-            juce::URL audioURL { chooser.getResult() };
-            musicLibrary.addTrack(audioURL);
+                // Convert the chosen file to a URL and load it
+                juce::URL audioURL{ chooser.getResult() };
+                musicLibrary.addTrack(audioURL);
 
-            // Update playlist to show the new track
-            shownTracks = musicLibrary.getTracks();
-            tableComponent.updateContent();
-        }
+                // Update playlist to show the new track
+                shownTracks = musicLibrary.getTracks();
+                tableComponent.updateContent();
+            }
+        );
     }
     // 'Clear Playlist' button
     else if (button == &clearPlaylistButton)

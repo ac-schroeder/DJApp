@@ -113,14 +113,15 @@ private:
     void setUpButtonImages();
 
     /** 
-     * Initializes slider ranges, values, and label texts. 
+     * Initializes slider labels and ranges. 
      */
     void setUpSliders();
 
     // Pointer to the audio player for the deck
     DJAudioPlayer* player;
     // Location of images for GUI buttons
-    juce::File buttonImageDirectory{ juce::File::getCurrentWorkingDirectory() };
+    juce::File buttonImageDirectory{ 
+        juce::File::getCurrentWorkingDirectory().getChildFile("button-images")};
     // Custom look and feel 
     MainLookAndFeel mainLookAndFeel;
 

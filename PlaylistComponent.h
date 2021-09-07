@@ -145,6 +145,8 @@ private:
     // Pointers to the deck GUI components, for loading tracks
     DeckGUI* rightDeck;
     DeckGUI* leftDeck;
+    // Pointer for a file chooser to add tracks
+    std::unique_ptr<juce::FileChooser> chooser;
     // Custom look and feel
     MainLookAndFeel mainLookAndFeel;
 
