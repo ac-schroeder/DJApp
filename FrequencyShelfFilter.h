@@ -13,9 +13,7 @@
 #include <JuceHeader.h>
 #include "DJAudioPlayer.h"
 
-//==============================================================================
-/*
-*/
+
 class FrequencyShelfFilter  : public juce::Component,
                               public juce::Slider::Listener
 {
@@ -29,7 +27,9 @@ public:
      */
     FrequencyShelfFilter(DJAudioPlayer* _player);
 
-    /** Destructor */
+    /** 
+     * Destructor 
+     */
     ~FrequencyShelfFilter() override;
 
     /**
@@ -46,6 +46,7 @@ public:
      */
     void resized() override;
 
+private:
      /**
       * Implements Slider::Listener: Processes slider value changes.
       * Sends frequency shelf coeeficient values to the player for filtering.
@@ -54,16 +55,20 @@ public:
       */
     void sliderValueChanged(juce::Slider* slider) override;
 
-private:
-    /** Sets up slider ranges, values, and component names. */
+    /** 
+     * Sets up slider ranges, values, and component names. 
+     */
     void setUpSliders();
-    /** Sets up slider labels for the sliders. */
+
+    /** 
+     * Sets up slider labels for the sliders. 
+     */
     void setUpSliderLabels();
 
     // Pointer to the player, used for setting shelf filter coefficients
     DJAudioPlayer* player;
 
-    /*========== CHILD COMPONENTS =========*/
+    /*-------------- Child Components ------------*/
     // Main group labels
     juce::Label highShelfLabel;
     juce::Label lowShelfLabel;
@@ -89,7 +94,6 @@ private:
                                 juce::Slider::TextBoxAbove };
     juce::Slider lowQSlider{ juce::Slider::LinearVertical, 
                              juce::Slider::TextBoxAbove };
-
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FrequencyShelfFilter)
 };

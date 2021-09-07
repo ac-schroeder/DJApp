@@ -14,6 +14,7 @@
 #include "MusicTrack.h"
 #include "DJAudioPlayer.h"
 
+
 class MusicLibrary 
 {
 public:
@@ -26,7 +27,9 @@ public:
      */
     MusicLibrary(juce::AudioFormatManager& _formatManager);
 
-    /** Destructor */
+    /** 
+     * Destructor 
+     */
     ~MusicLibrary();
 
     /** 
@@ -49,7 +52,7 @@ public:
      *
      * @param audioURL - The URL of the track to add to the library
      */
-    void addTrack(juce::URL audioURL);
+    void addTrack(const juce::URL& audioURL);
 
     /** 
      * Removes a track from the music library.
@@ -72,19 +75,22 @@ public:
     std::vector<MusicTrack> searchLibrary(juce::String& keyword);
 
 private:
-    /** Saves the music library track list to CSV. */
+    /** 
+     * Saves the music library track list to CSV.
+     */
     void saveLibrary();
-    /** Loads the music library track list from CSV. */
+
+    /** 
+     * Loads the music library track list from CSV. 
+     */
     void loadLibrary();
 
-    // An audio player to read meta info about tracks
+    // Audio player to read meta info about tracks
     DJAudioPlayer sourceReader;
-
     // The music library
     std::vector<MusicTrack> libraryTracks;
     // A counter for incrementing track IDs in the library
     int trackIDCount{ 0 };
-
     // Local file object to store library CSV data
     juce::File tracksFile{ juce::File::getCurrentWorkingDirectory().getFullPathName() 
         + "\\libraryTracks.csv" };

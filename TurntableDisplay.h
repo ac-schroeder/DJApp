@@ -13,9 +13,7 @@
 #include <JuceHeader.h>
 #include "DJAudioPlayer.h"
 
-//==============================================================================
-/*
-*/
+
 class TurntableDisplay  : public juce::Component
 {
 public:
@@ -48,6 +46,7 @@ public:
      */
     void setPositionRelative(double _relativePosition);
 
+private:
     /** 
      * Updates the coordinates of the toneArmNeedle. Called in paint() 
      * and resized(). Repainting is done whenever setPositionRelative() is called
@@ -55,7 +54,6 @@ public:
      */
     void updateNeedlePosition();
 
-private:
     // The relative position of the playhead as a percentage of track length
     double relativePosition{0};
 

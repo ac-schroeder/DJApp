@@ -11,6 +11,7 @@
 #include <algorithm>
 #include "MusicLibrary.h"
 
+
 MusicLibrary::MusicLibrary(juce::AudioFormatManager& _formatManager)
     : sourceReader{ _formatManager }
 {
@@ -21,7 +22,7 @@ MusicLibrary::MusicLibrary(juce::AudioFormatManager& _formatManager)
     // If tracks loaded from the saved library, it starts at the last known ID
     if (!libraryTracks.empty())
     {
-        int lastID = libraryTracks[libraryTracks.size() - 1].trackID;
+        int lastID = libraryTracks[libraryTracks.size() - 1].getTrackID();
         trackIDCount = lastID;
     }
 }
@@ -44,12 +45,12 @@ std::vector<MusicTrack> MusicLibrary::getTracks()
 MusicTrack MusicLibrary::getTrack(int _trackID)
 {
     // Initialize a MusicTrack pointer to nullptr, in the event the track is not found
-    MusicTrack* matchedTrack{ nullptr };
+    const MusicTrack* matchedTrack{ nullptr };
     
     // Search the music library for the track with the right ID
-    for (MusicTrack& track : libraryTracks)
+    for (const MusicTrack& track : libraryTracks)
     {
-        if (track.trackID == _trackID)
+        if (track.getTrackID() == _trackID)
         {
             // assign the pointer to the track
             matchedTrack = &track;      
@@ -66,7 +67,7 @@ MusicTrack MusicLibrary::getTrack(int _trackID)
     return *matchedTrack;
 }
 
-void MusicLibrary::addTrack(juce::URL audioURL)
+void MusicLibrary::addTrack(const juce::URL& audioURL)
 {
     // Get the next trackID number and increment the counter
     int trackID = ++trackIDCount;
@@ -92,7 +93,7 @@ void MusicLibrary::removeTrack(int _trackID)
         // loop over the libraryTracks vector and check if the trackID matches
         for (int i = libraryTracks.size() - 1; i >= 0; i--)
         {
-            if (libraryTracks.at(i).trackID == _trackID)
+            if (libraryTracks.at(i).getTrackID() == _trackID)
             {
                 // erase the track using an iterator to this position
                 libraryTracks.erase(libraryTracks.begin() + i);
@@ -120,9 +121,9 @@ std::vector<MusicTrack> MusicLibrary::searchLibrary(juce::String& keyword)
     std::vector<MusicTrack> matchedTracks;
 
     // Add any tracks that contain the keyword pattern
-    for (MusicTrack& track : libraryTracks)
+    for (const MusicTrack& track : libraryTracks)
     {
-        if (track.fileName.matchesWildcard(pattern, true))
+        if (track.getFileName().matchesWildcard(pattern, true))
         {
             matchedTracks.push_back(track);
         }
@@ -144,15 +145,15 @@ void MusicLibrary::saveLibrary()
         output.truncate();
 
         // Save each track to the CSV file
-        for (MusicTrack& track : libraryTracks)
+        for (const MusicTrack& track : libraryTracks)
         {
             // Convert the trackID to a string
-            juce::String trackID{ track.trackID };
+            juce::String trackID{ track.getTrackID() };
             // Convert the URL to a string
-            juce::String audioURL = track.audioURL.getLocalFile().getFullPathName();
+            juce::String audioURL = track.getAudioURL().getLocalFile().getFullPathName();
             // Make a comma-delimited string for the track's properties
-            juce::String line = trackID + "," + track.fileName + "," 
-                                + audioURL + "," + track.length + "\n";
+            juce::String line = trackID + "," + track.getFileName() + "," 
+                                + audioURL + "," + track.getLength() + "\n";
             // Write the line to the CSV file
             output.writeText(line, false, false, "\n");
         }

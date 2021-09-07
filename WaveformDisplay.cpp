@@ -11,7 +11,7 @@
 #include <JuceHeader.h>
 #include "WaveformDisplay.h"
 
-//==============================================================================
+
 WaveformDisplay::WaveformDisplay(juce::AudioFormatManager& formatManagerToUse,
     juce::AudioThumbnailCache& cacheToUse)
     : audioThumb {           
@@ -67,13 +67,7 @@ void WaveformDisplay::resized()
 {
 }
 
-// Called whenever the audio thumbnail broadcasts changes
-void WaveformDisplay::changeListenerCallback(juce::ChangeBroadcaster* source)
-{
-    repaint();
-}
-
-void WaveformDisplay::loadURL(juce::URL audioURL)
+void WaveformDisplay::loadURL(const juce::URL& audioURL)
 {
     // Clear previous drawings
     audioThumb.clear();
@@ -92,4 +86,10 @@ void WaveformDisplay::setPositionRelative(double  _relativePosition)
         // Redraw the waveform
         repaint();
     }
+}
+
+// Called whenever the audio thumbnail broadcasts changes
+void WaveformDisplay::changeListenerCallback(juce::ChangeBroadcaster* source)
+{
+    repaint();
 }

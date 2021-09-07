@@ -10,6 +10,7 @@
 
 #include "DJAudioPlayer.h"
 
+
 DJAudioPlayer::DJAudioPlayer(juce::AudioFormatManager& _formatManager)
     : formatManager{ _formatManager }
 {
@@ -41,7 +42,7 @@ void DJAudioPlayer::releaseResources()
 }
 
 // Creates JUCE audio source objects for the file 
-void DJAudioPlayer::loadURL(juce::URL audioURL)
+void DJAudioPlayer::loadURL(const juce::URL& audioURL)
 {
     // Convert audioURL to an input stream and create an AudioFormatReader for it
     auto* reader = formatManager.createReaderFor(audioURL.createInputStream(false));
@@ -116,7 +117,7 @@ void DJAudioPlayer::setPositionRelative(double relativePosition)
 void DJAudioPlayer::setLowShelf(double frequency, float gain, double q)
 {
     // Set the coefficients for the filter
-    lowShelfCoefficients = juce::IIRCoefficients::makeLowShelf(sampleRate, frequency, q, gain);
+    juce::IIRCoefficients lowShelfCoefficients = juce::IIRCoefficients::makeLowShelf(sampleRate, frequency, q, gain);
     // Update the filtered audio source with the coefficients
     lowShelfFilteredSource.setCoefficients(lowShelfCoefficients);
 }
@@ -124,19 +125,19 @@ void DJAudioPlayer::setLowShelf(double frequency, float gain, double q)
 void DJAudioPlayer::setHighShelf(double frequency, float gain, double q)
 {
     // Set the coefficients for the filter
-    highShelfCoefficients = juce::IIRCoefficients::makeHighShelf(sampleRate, frequency, q, gain);
+    juce::IIRCoefficients highShelfCoefficients = juce::IIRCoefficients::makeHighShelf(sampleRate, frequency, q, gain);
     // Update the filtered audio source with the coefficients
     highShelfFilteredSource.setCoefficients(highShelfCoefficients);
 }
 
 void DJAudioPlayer::start()
 {
-    transportSource.start();    //  Begin playback
+    transportSource.start();                    //  Begin playback
 }
 
 void DJAudioPlayer::pause()
 {
-    transportSource.stop();     // Pause playback
+    transportSource.stop();                     // Pause playback
 }
 
 void DJAudioPlayer::stop()
@@ -145,11 +146,13 @@ void DJAudioPlayer::stop()
     transportSource.setNextReadPosition(0);     // Reset position to 0
 }
 
+// Returns the relative position into the track, or 0 if no track is loaded.
+// Called continuously by the DeckGUI::timerCallback. 
 double DJAudioPlayer::getPositionRelative()
 {
-    double position{};  // Initialize to 0
+    double position{};  // Default is 0
 
-    // If position is not 0, get position
+    // If a track is loaded and playing, get position
     if (transportSource.getLengthInSeconds() != 0)
     {
         // Calculate relative position as a proportion of total track length
@@ -158,7 +161,6 @@ double DJAudioPlayer::getPositionRelative()
     }
     return position;
 }
-
 
 std::string DJAudioPlayer::getTrackLength()
 {

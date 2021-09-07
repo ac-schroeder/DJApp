@@ -1,7 +1,7 @@
 #include "MainComponent.h"
 #include <cmath>
 
-//==============================================================================
+
 MainComponent::MainComponent()
 {
     // Set fixed size - app is non-resizable (see main)
@@ -35,7 +35,7 @@ MainComponent::~MainComponent()
     shutdownAudio();
 }
 
-//==============================================================================
+
 void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
 {
     // Set up player audio sources
@@ -66,7 +66,7 @@ void MainComponent::releaseResources()
     player2.releaseResources();
 }
 
-//==============================================================================
+
 void MainComponent::paint (juce::Graphics& g)
 {
     // Set background colour

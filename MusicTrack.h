@@ -12,6 +12,7 @@
 
 #include <JuceHeader.h>
 
+
 class MusicTrack
 {
 public:
@@ -29,9 +30,37 @@ public:
                juce::URL _audioURL, 
                std::string _length);
 
+    /**
+     * Gets the track ID.
+     * 
+     * @return The track ID.
+     */
+    int getTrackID() const;
 
+    /**
+     * Gets the track file name.
+     *
+     * @return A JUCE string of the file name.
+     */
+    juce::String getFileName() const;
+
+    /**
+     * Gets the track URL.
+     *
+     * @return A JUCE URL object of the track URL.
+     */
+    juce::URL getAudioURL() const;
+
+    /**
+     * Gets the track length as a formatted string in minutes and seconds.
+     *
+     * @return A formatted string of the track length in minutes and seconds.
+     */
+    std::string getLength() const;
+
+private:
     int trackID;                // the unique track ID
-    juce::String fileName;      // the track title
+    juce::String fileName;      // the track file name
     juce::URL audioURL;         // the track file URL
     std::string length;         // the track length
 };

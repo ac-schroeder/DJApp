@@ -11,7 +11,7 @@
 #include <JuceHeader.h>
 #include "FrequencyShelfFilter.h"
 
-//==============================================================================
+
 FrequencyShelfFilter::FrequencyShelfFilter(DJAudioPlayer* _player)
     : player {_player}
 {
@@ -65,13 +65,11 @@ void FrequencyShelfFilter::resized()
 {
     // Total component area
     auto area = getLocalBounds();
-
     // Label and slider dimensions
     auto shelfHeight = area.getHeight() / 2;
     auto shelfSlidersGroupWidth = area.getWidth() * 0.75;
     auto sliderHeight = shelfHeight * 0.8;
     auto sliderWidth = shelfSlidersGroupWidth / 3;
-
     // Shelf areas
     auto highShelfArea = area.removeFromTop(shelfHeight);
     auto lowShelfArea = area.removeFromTop(shelfHeight);
@@ -82,7 +80,6 @@ void FrequencyShelfFilter::resized()
     // Set shelf slider group component bounds
     highShelfSliders.setBounds(highShelfSlidersArea);
     lowShelfSliders.setBounds(lowShelfSlidersArea);
-
     // Set individual slider component bounds
     highFrequencySlider.setBounds(highShelfSlidersArea.removeFromLeft(sliderWidth).removeFromBottom(sliderHeight));
     highGainSlider.setBounds(highShelfSlidersArea.removeFromLeft(sliderWidth).removeFromBottom(sliderHeight));
@@ -120,7 +117,6 @@ void FrequencyShelfFilter::sliderValueChanged(juce::Slider* slider)
         player->setLowShelf(frequency, gain, q);
     }
 }
-
 
 void FrequencyShelfFilter::setUpSliders()
 {

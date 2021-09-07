@@ -5,17 +5,15 @@
 #include "DeckGUI.h"
 #include "PlaylistComponent.h"
 
-//==============================================================================
+
 class MainComponent  : public juce::AudioAppComponent
 {
 public:
-    //============================================================================== 
     /** Constructor */
     MainComponent();
     /** Destructor */
     ~MainComponent() override;
 
-    //==============================================================================#
     /**
      * Implements AudioSource: Prepares the audio source to play.
      *
@@ -38,7 +36,6 @@ public:
      */
     void releaseResources() override;
 
-    //==============================================================================
     /**  
      * Implements Component: Draws the component's content, as well as any child 
      * components' content.
@@ -54,7 +51,6 @@ public:
     void resized() override;
 
 private:
-    //==============================================================================
     // Shared AudioFormatManager for all audio players and thumbnails
     juce::AudioFormatManager formatManager;
     // Shared AudioThumbnailCache for all deck waveform AudioThumbnail objects

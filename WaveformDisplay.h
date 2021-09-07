@@ -12,9 +12,7 @@
 
 #include <JuceHeader.h>
 
-//==============================================================================
-/*
-*/
+
 class WaveformDisplay : public juce::Component,
                         public juce::ChangeListener
 {
@@ -31,7 +29,9 @@ public:
     WaveformDisplay(juce::AudioFormatManager& formatManagerToUse,
                     juce::AudioThumbnailCache& cacheToUse);
 
-    /** Destructor */
+    /** 
+     * Destructor 
+     */
     ~WaveformDisplay() override;
 
     /**
@@ -49,17 +49,11 @@ public:
     void resized() override;
 
     /** 
-     * Implements ChangeListener: Detects broadcasts from AudioThumbnail 
-     * in order to update the waveform display. 
-     */
-    void changeListenerCallback(juce::ChangeBroadcaster* source) override;
-
-    /** 
      * Loads the audio file by setting it as source for the AudioThumbnail.
      *
      * @param audioURL - The URL of the audio file to display.
      */
-    void loadURL(juce::URL audioURL);
+    void loadURL(const juce::URL& audioURL);
 
     /** 
      * Sets the relative position of the playhead, as a percentage of track length. 
@@ -72,6 +66,12 @@ public:
     void setPositionRelative(double  _relativePosition);
 
 private:
+    /**
+     * Implements ChangeListener: Detects broadcasts from AudioThumbnail
+     * in order to update the waveform display.
+     */
+    void changeListenerCallback(juce::ChangeBroadcaster* source) override;
+
     // Audio thumbnail for displaying waveform
     juce::AudioThumbnail audioThumb;
     // Flag to decide whether to paint the waveform to the component

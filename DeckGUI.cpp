@@ -11,7 +11,7 @@
 #include <JuceHeader.h>
 #include "DeckGUI.h"
 
-//==============================================================================
+
 DeckGUI::DeckGUI(DJAudioPlayer* _player,
                  juce::AudioFormatManager& formatManagerToUse,
                  juce::AudioThumbnailCache& cacheToUse) 
@@ -25,10 +25,11 @@ DeckGUI::DeckGUI(DJAudioPlayer* _player,
 
     // Set default text for track title
     trackTitle.setColour(juce::Label::ColourIds::textColourId, juce::Colours::orange);
-    trackTitle.setText("Load a track below to get started...", juce::NotificationType::dontSendNotification);
+    trackTitle.setText("Load a track below to get started...",          
+                       juce::dontSendNotification);
 
     // Load button images
-    setUpButtonImages(buttonImageDirectory);
+    setUpButtonImages();
 
     // Add components
     addAndMakeVisible(trackTitle);
@@ -82,12 +83,12 @@ void DeckGUI::paint (juce::Graphics& g)
 
 }
 
+// Lays out deck component areas based on container size
 void DeckGUI::resized()
 {
     auto area = getLocalBounds();
 
-    /*==== Block Section Bounds ====*/
-
+    /*------------- Block Section Bounds ------------*/
     // Header section
     trackTitle.setBounds(area.removeFromTop(36));
     // Waveform display section
@@ -109,69 +110,68 @@ void DeckGUI::resized()
     auto turntableX = area.getX() + ((area.getWidth() - turntableDimension) / 2);
     turntableDisplay.setBounds(turntableX, area.getY(), turntableDimension, turntableDimension);
 
-    /*=== Block Section Sub-component Bounds ===*/
-
+    /*------------- Sub-Section Bounds ------------*/
     // Start-stop buttons
     auto startStopButtonWidth = startStopControlsArea.getWidth() / 3;
     auto startStopButtonMargin = 10;
     playButton.setBounds(startStopControlsArea.removeFromLeft(startStopButtonWidth).reduced(startStopButtonMargin));
     pauseButton.setBounds(startStopControlsArea.removeFromLeft(startStopButtonWidth).reduced(startStopButtonMargin));
     stopButton.setBounds(startStopControlsArea.removeFromLeft(startStopButtonWidth).reduced(startStopButtonMargin));
-
     // Volume controls
     auto volumeLabelWidth = 60;
     volumeSliderLabel.setBounds(volumeControlsArea.removeFromLeft(volumeLabelWidth));
     volumeSlider.setBounds(volumeControlsArea);
-
     // Frequency control sliders
     frequencyShelfFilter.setBounds(frequencyControlsArea.reduced(5));
-
     // Playback control sliders
     auto playbackSliderHeight = playbackControlsArea.getHeight() / 2;
     auto playbackLabelWidth = 50;
     auto playbackSliderMargin = 10;
-
     auto speedSliderArea = playbackControlsArea.removeFromTop(playbackSliderHeight);
     auto positionSliderArea = playbackControlsArea.removeFromTop(playbackSliderHeight);
-
     positionSliderLabel.setBounds(positionSliderArea.removeFromLeft(playbackLabelWidth));
     speedSliderLabel.setBounds(speedSliderArea.removeFromLeft(playbackLabelWidth));
-
     positionSlider.setBounds(positionSliderArea.reduced(playbackSliderMargin));
     speedSlider.setBounds(speedSliderArea.reduced(playbackSliderMargin));
 }
 
+void DeckGUI::loadURL(const juce::URL& audioURL, const juce::String& fileName)
+{
+    // Load the URL with the player (audio source)
+    player->loadURL(audioURL);
+    // Load the URL with the waveform display (audio thumbnail)
+    waveformDisplay.loadURL(audioURL);
+
+    // Set the track title for the deck
+    trackTitle.setText(fileName, juce::dontSendNotification);
+}
 
 void DeckGUI::buttonClicked(juce::Button* button)
 {
-    // Play Button
-    if (button == &playButton)
+    if (button == &playButton)  // Play Button
     {
-        player->start();    // Begin playback
+        player->start();        
     }
-    // Pause Button
-    if (button == &pauseButton)
+    if (button == &pauseButton) // Pause Button
     {
-        player->pause();    // Pause playback
+        player->pause();        
     }
-    // Stop Button
-    if (button == &stopButton)
+    if (button == &stopButton)  // Stop Button
     {
-        player->stop();     // Stop playback and reset playhead position
+        // Stopping also resets playhead position to 
+        // beginning of track
+        player->stop();     
     }
 }
 
-
 void DeckGUI::sliderValueChanged(juce::Slider* slider)
 {
-    // Volume slider
-    if (slider == &volumeSlider)
+    if (slider == &volumeSlider)    // Volume slider
     {
         // Set playback gain (volume) from the slider value
         player->setGain(slider->getValue());
-    }
-    // Speed slider 
-    if (slider == &speedSlider)
+    } 
+    if (slider == &speedSlider)     // Speed slider
     {
         // Set playback speed from the slider value
         auto speed = slider->getValue();
@@ -180,8 +180,7 @@ void DeckGUI::sliderValueChanged(juce::Slider* slider)
             player->setSpeed(speed);
         }
     }
-    // Position slider
-    if (slider == &positionSlider)
+    if (slider == &positionSlider)  // Position slider
     {
         // Set playhead position based on slider value
         player->setPositionRelative(slider->getValue());
@@ -196,7 +195,7 @@ bool DeckGUI::isInterestedInFileDrag(const juce::StringArray& files)
 void DeckGUI::filesDropped(const juce::StringArray& files, int x, int y)
 {
     // Load files dragged into the deck GUI areas straight to the deck,
-    // ...bypassing the playlist
+    // bypassing the playlist
     if (files.size() == 1)
     {
         // Convert the file to a URL and filename string
@@ -208,7 +207,7 @@ void DeckGUI::filesDropped(const juce::StringArray& files, int x, int y)
 }
 
 // Called at interval and coordinates playback with the waveform and
-// ...turntable displays
+// turntable displays
 void DeckGUI::timerCallback()
 {
     // Update the relative position of the waveform display
@@ -217,24 +216,12 @@ void DeckGUI::timerCallback()
     turntableDisplay.setPositionRelative(player->getPositionRelative());
 }
 
-
-void DeckGUI::loadURL(juce::URL audioURL, juce::String fileName)
-{
-    // Load the URL with the player (audio source)
-    player->loadURL(audioURL);
-    // Load the URL with the waveform display (audio thumbnail)
-    waveformDisplay.loadURL(audioURL);
-
-    // Set the track title for the deck
-    trackTitle.setText(fileName, juce::dontSendNotification);
-}
-
-void DeckGUI::setUpButtonImages(juce::File _buttonImageDirectory)
+void DeckGUI::setUpButtonImages()
 {
     // Get the image files
-    juce::File playButtonImageFile = _buttonImageDirectory.getChildFile("play.png");
-    juce::File pauseButtonImageFile = _buttonImageDirectory.getChildFile("pause.png");
-    juce::File stopButtonImageFile = _buttonImageDirectory.getChildFile("stop.png");
+    juce::File playButtonImageFile = buttonImageDirectory.getChildFile("play.png");
+    juce::File pauseButtonImageFile = buttonImageDirectory.getChildFile("pause.png");
+    juce::File stopButtonImageFile = buttonImageDirectory.getChildFile("stop.png");
 
     // Convert to image objects
     juce::Image playButtonImage = juce::ImageFileFormat::loadFrom(playButtonImageFile);

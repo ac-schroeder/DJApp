@@ -23,7 +23,9 @@ public:
      */
     DJAudioPlayer(juce::AudioFormatManager& _formatManager);
 
-    /** Destructor */
+    /** 
+     * Destructor 
+     */
     ~DJAudioPlayer();
 
     /** 
@@ -53,7 +55,7 @@ public:
      * 
      * @param audioURL - The URL of the audio file being loaded.
      */
-    void loadURL(juce::URL audioURL);
+    void loadURL(const juce::URL& audioURL);
 
     /**
      * Sets the gain (volume) of the audio source.
@@ -146,10 +148,6 @@ private:
     juce::IIRFilterAudioSource highShelfFilteredSource {&lowShelfFilteredSource, false};
     // Resampling wrapper for the audio source, to control speed
     juce::ResamplingAudioSource resampleSource{ &highShelfFilteredSource, false, 2 };
-
-    // The low and high shelf coefficients for the audio source
-    juce::IIRCoefficients lowShelfCoefficients;
-    juce::IIRCoefficients highShelfCoefficients;
 
     // The audio source's sample rate
     double sampleRate { 0 };

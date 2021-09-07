@@ -17,9 +17,7 @@
 #include "FrequencyShelfFilter.h"
 #include "TurntableDisplay.h"
 
-//==============================================================================
-/*
-*/
+
 class DeckGUI  : public juce::Component,
                  public juce::Button::Listener,
                  public juce::Slider::Listener,
@@ -42,7 +40,9 @@ public:
             juce::AudioFormatManager& formatManagerToUse,
             juce::AudioThumbnailCache& cacheToUse);
 
-    /** Destructor */
+    /** 
+     * Destructor 
+     */
     ~DeckGUI() override;
 
     /**
@@ -59,6 +59,15 @@ public:
      */
     void resized() override;
 
+    /**
+     * Loads an audio URL to the deck's player.
+     *
+     * @param audioURL - The URL of the audio file being loaded.
+     * @param fileName - The file name of the audio file being loaded.
+     */
+    void loadURL(const juce::URL& audioURL, const juce::String& fileName);
+
+private:
     /** 
      * Implements Button::Listener: Processes button clicks.
      *
@@ -97,17 +106,15 @@ public:
     void timerCallback() override;
 
     /** 
-     * Loads an audio URL to the deck's player. 
-     *
-     * @param audioURL - The URL of the audio file being loaded.
-     * @param fileName - The file name of the audio file being loaded.
+     * Loads images for GUI buttons. 
+     * 
+     * @param _buttonImageDirectory - The file containing the image objects.
      */
-    void loadURL(juce::URL audioURL, juce::String fileName);
+    void setUpButtonImages();
 
-private:
-    /** Loads images for GUI buttons. */
-    void setUpButtonImages(juce::File _buttonImageDirectory );
-    /** Initializes slider ranges, values, and label texts. */
+    /** 
+     * Initializes slider ranges, values, and label texts. 
+     */
     void setUpSliders();
 
     // Pointer to the audio player for the deck
@@ -117,7 +124,7 @@ private:
     // Custom look and feel 
     MainLookAndFeel mainLookAndFeel;
 
-    /*========== CHILD COMPONENTS =========*/
+    /*------------- Child Components ------------*/
     // Deck title
     juce::Label trackTitle;                 
     // Start/stop/pause button block
