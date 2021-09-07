@@ -20,20 +20,38 @@ class FrequencyShelfFilter  : public juce::Component,
                               public juce::Slider::Listener
 {
 public:
-    /** Constructor */
+    /** 
+     * Constructor 
+     *
+     * @param _player - A pointer to the player for the deck this component
+     *      belongs to. This component sends frequency shelf coefficent data 
+     *      to the player to modify playback.
+     */
     FrequencyShelfFilter(DJAudioPlayer* _player);
+
     /** Destructor */
     ~FrequencyShelfFilter() override;
 
-    /** Implements Component: Paints the component. */
+    /**
+     * Implements Component: Draws the component's content, as well as any child
+     * components' content.
+     *
+     * @param g - The graphics context of the component.
+     */
     void paint (juce::Graphics&) override;
-    /** Implements Component: Repaints the component on resize. */
+
+    /**
+     * Implements Component: Called when the component is resized. Used to
+     * control layout of child components.
+     */
     void resized() override;
 
-    /** 
-     * Implements Slider::Listener: Processes slider value changes. 
-     * Sends frequency shelf coeeficient values to the player for filtering.
-     */
+     /**
+      * Implements Slider::Listener: Processes slider value changes.
+      * Sends frequency shelf coeeficient values to the player for filtering.
+      *
+      * @param slider - Pointer to the slider that triggered the event.
+      */
     void sliderValueChanged(juce::Slider* slider) override;
 
 private:

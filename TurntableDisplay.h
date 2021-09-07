@@ -24,9 +24,18 @@ public:
     /** Destructor */
     ~TurntableDisplay() override;
 
-    /** Implements Component: Paints the component. */
+    /**
+     * Implements Component: Draws the component's content, as well as any child
+     * components' content.
+     *
+     * @param g - The graphics context of the component.
+     */
     void paint (juce::Graphics&) override;
-    /** Implements Component: Repaints the component on resize. */
+
+    /**
+     * Implements Component: Called when the component is resized. Used to
+     * control layout of child components.
+     */
     void resized() override;
 
     /** 

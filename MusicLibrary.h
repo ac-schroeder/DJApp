@@ -17,12 +17,23 @@
 class MusicLibrary 
 {
 public:
-    /** Constructor */
+    /** 
+     * Constructor 
+     *
+     * @param _formatManager - Reference to the shared audio format manager
+     *      for the app. Used to create an audio source to read track info, 
+     *      mainly track lengths.
+     */
     MusicLibrary(juce::AudioFormatManager& _formatManager);
+
     /** Destructor */
     ~MusicLibrary();
 
-    /** Returns the full music library of tracks. */
+    /** 
+     * Gets all the tracks in the music library. 
+     * 
+     * @return The entire music library, as a vector of MusicTrack objects
+     */
     std::vector<MusicTrack> getTracks();
 
     /** 
@@ -47,7 +58,9 @@ public:
      */
     void removeTrack(int _trackID);
 
-    /** Clears the music library of all tracks */
+    /** 
+     * Clears the music library of all tracks 
+     */
     void clearLibrary();
 
     /** 
@@ -64,6 +77,9 @@ private:
     /** Loads the music library track list from CSV. */
     void loadLibrary();
 
+    // An audio player to read meta info about tracks
+    DJAudioPlayer sourceReader;
+
     // The music library
     std::vector<MusicTrack> libraryTracks;
     // A counter for incrementing track IDs in the library
@@ -72,9 +88,6 @@ private:
     // Local file object to store library CSV data
     juce::File tracksFile{ juce::File::getCurrentWorkingDirectory().getFullPathName() 
         + "\\libraryTracks.csv" };
-
-    // An audio player to read meta info about tracks
-    DJAudioPlayer sourceReader;
 };
 
 

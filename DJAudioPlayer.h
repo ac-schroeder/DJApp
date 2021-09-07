@@ -15,16 +15,37 @@
 class DJAudioPlayer : public juce::AudioSource
 {
 public:
-    /** Constructor */
+    /** 
+     * Constructor
+     *
+     * @param _formatManager - Reference to the shared audio format manager
+     *      for the app. Used to create the audio source for the player.
+     */
     DJAudioPlayer(juce::AudioFormatManager& _formatManager);
+
     /** Destructor */
     ~DJAudioPlayer();
 
-    /** Implements AudioSource: Prepares the audio source to play. */
+    /** 
+     * Implements AudioSource: Prepares the audio source to play. 
+     *
+     * @param samplesPerBlockExpected - The number of samples the source plays 
+     *     when it gets an audio block
+     * @param sampleRate - The sample rate of the output
+     */
     void prepareToPlay(int samplesPerBlockExpected, double _sampleRate) override;
-    /** Implements AudioSource: Fills the buffer with the next block. */
+
+    /** 
+     * Implements AudioSource: Fetches blocks of audio data. 
+     *
+     * @param bufferToFill - The audio source buffer.
+     */
     void getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) override;
-    /** Implements AudioSource: Releases resources from the audio sources. */
+
+    /** 
+     * Implements AudioSource: Releases resources from the audio source
+     * after playback has stopped.
+     */
     void releaseResources() override;
 
     /** 
@@ -80,22 +101,35 @@ public:
      */
     void setHighShelf(double frequency, float gain, double q);
 
-    /** Starts playback on the audio source. */
+    /** 
+     * Starts playback on the audio source. 
+     */
     void start();
 
-    /** Pauses playback on the audio source. */
+    /** 
+     * Pauses playback on the audio source. 
+     */
     void pause();
 
-    /** Stops and resets playback on the audio source. */
+    /** 
+     * Stops and resets playback on the audio source. 
+     */
     void stop();
 
     /** 
      * Returns the relative position of the playhead as a percentage of 
      * the track length. 
+     * 
+     * @return - The position as a percentage of track length
      */
     double getPositionRelative();
 
-    /** Returns the track length as a formatted string of minutes and seconds. */
+    /** 
+     * Gets the source's track length and formats it as a string of 
+     * minutes and seconds. 
+     *
+     * @return The track length as a formatted string
+     */
     std::string getTrackLength();
 
 private:

@@ -27,27 +27,67 @@ class DeckGUI  : public juce::Component,
                  public juce::Timer
 {
 public:
-    /** Constructor */
+    /** 
+     * Constructor 
+     *
+     * @param player             - A pointer to the player for the deck.
+     * @param formatManagerToUse - Reference to the shared audio format manager
+     *                             for the app, to pass on to child components 
+     *                             that need it.
+     * @param cacheToUse         - Reference to the shared audio source thumbnail 
+     *                             cache, to pass on to child components that 
+     *                             need it.
+     */
     DeckGUI(DJAudioPlayer* player,
             juce::AudioFormatManager& formatManagerToUse,
             juce::AudioThumbnailCache& cacheToUse);
+
     /** Destructor */
     ~DeckGUI() override;
 
-    /** Implements Component: Paints the DeckGUI component. */
+    /**
+     * Implements Component: Draws the component's content, as well as any child
+     * components' content.
+     *
+     * @param g - The graphics context of the component.
+     */
     void paint (juce::Graphics&) override;
-    /** Implements Component: Repaints the DeckGUI on resize. */
+
+    /**
+     * Implements Component: Called when the component is resized. Used to
+     * control layout of child components.
+     */
     void resized() override;
 
-    /** Implements Button::Listener: Processes button clicks. */
+    /** 
+     * Implements Button::Listener: Processes button clicks.
+     *
+     * @param button - Pointer to the button that was clicked.
+     */
     void buttonClicked(juce::Button* button) override;
 
-    /** Implement Slider::Listener: Processes slider value changes. */
+    /** 
+     * Implements Slider::Listener: Processes slider value changes. 
+     *
+     * @param slider - Pointer to the slider that triggered the event.
+     */
     void sliderValueChanged(juce::Slider* slider) override;
 
-    /** Implements FileDragAndDrop: Registers when files are being dragged. */
+    /** 
+     * Implements FileDragAndDrop: Callback called repeatedly while user
+     * is dragging files.
+     *
+     * @param files - The set of files being dragged.
+     */
     bool isInterestedInFileDrag(const juce::StringArray& files) override;
-    /** Implements FileDragAndDrop: Processes files dropped into the component. */
+
+    /** 
+     * Implements FileDragAndDrop: Processes files dropped into the component. 
+     *
+     * @param files - The set of files being dropped.
+     * @param x     - The mouse x position, relative to the component.
+     * @param y     - The mouse y position, relative to the component.
+     */
     void filesDropped(const juce::StringArray& files, int x, int y) override;
 
     /** 
@@ -67,15 +107,13 @@ public:
 private:
     /** Loads images for GUI buttons. */
     void setUpButtonImages(juce::File _buttonImageDirectory );
-    /** Initializes slider ranges, values, and label texts */
+    /** Initializes slider ranges, values, and label texts. */
     void setUpSliders();
 
     // Pointer to the audio player for the deck
     DJAudioPlayer* player;
-
     // Location of images for GUI buttons
     juce::File buttonImageDirectory{ juce::File::getCurrentWorkingDirectory() };
-
     // Custom look and feel 
     MainLookAndFeel mainLookAndFeel;
 
