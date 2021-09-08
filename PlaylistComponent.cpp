@@ -250,7 +250,7 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
     if (button == &addTrackButton)
     {
         // Create a file chooser GUI for the user to select a file 
-        chooser = std::make_unique<juce::FileChooser> ("Select a track to load...", juce::File::getSpecialLocation(juce::File::userHomeDirectory));
+        chooser = std::make_unique<juce::FileChooser> ("Select a track to load...", homeDirectory);
 
         // Set file chooser flags
         auto folderChooserFlags = juce::FileBrowserComponent::openMode |
@@ -259,16 +259,22 @@ void PlaylistComponent::buttonClicked(juce::Button* button)
         // If the user selects a file to open, load the file
         chooser->launchAsync(folderChooserFlags,
             [this](const juce::FileChooser& chooser) {
-                // Clear any active search, so full library can be seen
-                clearSearch();
+                // Get the chosen file
+                juce::File file { chooser.getResult() };
+                // Confirm it is a supported audio file
+                if (file.hasFileExtension("mp3") || file.hasFileExtension("wav"))
+                {
+                    // Clear any active search, so full library can be seen
+                    clearSearch();
 
-                // Convert the chosen file to a URL and load it
-                juce::URL audioURL{ chooser.getResult() };
-                musicLibrary.addTrack(audioURL);
+                    // Convert the chosen file to a URL and load it
+                    juce::URL audioURL{ file };
+                    musicLibrary.addTrack(audioURL);
 
-                // Update playlist to show the new track
-                shownTracks = musicLibrary.getTracks();
-                tableComponent.updateContent();
+                    // Update playlist to show the new track
+                    shownTracks = musicLibrary.getTracks();
+                    tableComponent.updateContent();
+                }
             }
         );
     }

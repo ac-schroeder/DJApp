@@ -147,6 +147,9 @@ private:
     DeckGUI* leftDeck;
     // Pointer for a file chooser to add tracks
     std::unique_ptr<juce::FileChooser> chooser;
+    // Path to home directory for selecting tracks to add
+    juce::File homeDirectory { 
+        juce::File::getSpecialLocation(juce::File::userHomeDirectory) };
     // Custom look and feel
     MainLookAndFeel mainLookAndFeel;
 
