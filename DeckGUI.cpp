@@ -218,6 +218,8 @@ void DeckGUI::timerCallback()
     turntableDisplay.setPositionRelative(player->getPositionRelative());
 }
 
+// Button images are free stock images licensed under the MIT license, 
+// from iconfinder.com.
 void DeckGUI::setUpButtonImages()
 {
     // Get the image files
