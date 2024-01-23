@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    MainLookAndFeel.cpp
-    Created: 1 Sep 2021 3:43:28pm
-    Author:  Alana Schroeder
-
-  ==============================================================================
-*/
-
 #include <JuceHeader.h>
 #include "MainLookAndFeel.h"
 

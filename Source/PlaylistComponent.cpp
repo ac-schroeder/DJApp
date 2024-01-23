@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    PlaylistComponent.cpp
-    Created: 10 Aug 2021 1:41:53pm
-    Author:  Alana Schroeder
-
-  ==============================================================================
-*/
-
 #include <JuceHeader.h>
 #include "PlaylistComponent.h"
 

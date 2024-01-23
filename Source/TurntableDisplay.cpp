@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    TurntableDisplay.cpp
-    Created: 25 Aug 2021 3:29:58pm
-    Author:  Alana Schroeder
-
-  ==============================================================================
-*/
-
 #include <cmath>
 #include <JuceHeader.h>
 #include "TurntableDisplay.h"

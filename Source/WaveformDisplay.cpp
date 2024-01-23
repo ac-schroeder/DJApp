@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    WaveformDisplay.cpp
-    Created: 5 Aug 2021 1:33:56pm
-    Author:  Alana Schroeder
-
-  ==============================================================================
-*/
-
 #include <JuceHeader.h>
 #include "WaveformDisplay.h"
 
